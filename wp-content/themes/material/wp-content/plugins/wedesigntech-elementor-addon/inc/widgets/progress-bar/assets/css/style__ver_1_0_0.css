@@ -1,0 +1,174 @@
+/***<<--- Progress Bar Transition --->>***/
+
+.wdt-progressbar-container
+{
+    -webkit-transition: var(--wdt-elementor-base-transition);
+            transition: var(--wdt-elementor-base-transition);
+}
+
+.wdt-progressbar-container
+{
+    position: relative;
+
+    display: flex;
+}
+
+.wdt-progressbar-container svg
+{
+    width: auto;
+    height: auto;
+}
+
+.wdt-progressbar-container .wdt-progressbar-value
+{
+    line-height: 1;
+
+    position: absolute;
+    right: 0;
+
+    display: flex;
+    align-items: center;
+}
+
+/* Horizontal - Progress Bar*/
+
+.wdt-progressbar-container.wdt-progressbar-horizontal
+{
+    flex-direction: column;
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal .wdt-progressbar-content
+{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal .wdt-progressbar-content .wdt-progressbar-title
+{
+    line-height: 1;
+
+    width: 100%;
+    margin: 0 0 15px 0;
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal .wdt-progressbar
+{
+    position: relative;
+
+    width: 100%;
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-floating .wdt-progressbar-value
+{
+    right: auto;
+    transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed-along .wdt-progressbar-value
+{
+    z-index: 1;
+    bottom: 0;
+
+    margin: 0 0 0 15px;
+
+    -webkit-transform: translateY(100%);
+       -moz-transform: translateY(100%);
+            transform: translateY(100%);
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed .wdt-progressbar-content
+{
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 0;
+
+    transform: translateY(-50%);
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed .wdt-progressbar-content .wdt-progressbar-title
+{
+    width: auto;
+    margin: 0 10px;
+}
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed .wdt-progressbar-content .wdt-progressbar-value
+{
+    position: relative;
+}
+
+/*Circle - Progress Bar*/
+
+.wdt-progressbar-container.wdt-progressbar-circle .wdt-progressbar-value
+{
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+/*Semi-Circle - Progress Bar*/
+
+.wdt-progressbar-container.wdt-progressbar-semi-circle .wdt-progressbar-value
+{
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+/* donut-circle */
+
+.wdt-progressbar-circle.wdt-progressbar-container svg{height: 200px;}
+@media screen and (max-width: 1024px){
+    .wdt-progressbar-circle.wdt-progressbar-container svg{height: 125px;}
+}
+@media screen and (max-width: 767px){
+    .wdt-progressbar-circle.wdt-progressbar-container svg{height: 100px;}
+}
+.wdt-progressbar-circle.wdt-progressbar-container.wdt-progressbar-circle .wdt-progressbar-value{font-size: var(--wdtFontSize_H2);font-weight: var(--wdtFontWeight_H2);color: var(--wdtAccentTxtColor) !important;}
+.wdt-simple-donut-progress.elementor-widget.elementor-widget-wdt-progress-bar + .elementor-widget-text-editor p {font-size: var(--wdtFontSize_H4);color: var(--wdtAccentTxtColor);}
+
+/* horizondal progress bar */
+
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed .wdt-progressbar-content{position: unset;}
+.wdt-progressbar-container.wdt-progressbar-horizontal.wdt-progressbar-content-fixed .wdt-progressbar-content .wdt-progressbar-title{margin: 0 10px 0 0;}
+.wdt-progressbar-container.wdt-progressbar-horizontal .wdt-progressbar svg {border-radius: 3px;}
+
+
+/* .wdt-progressbar-container svg path:last-child{background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    -webkit-background-size: 20px 20px;
+    -moz-background-size: 20px 20px;
+    -o-background-size: 20px 20px;
+    background-size: 20px 20px;
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
+    -moz-animation: progress-bar-stripes 2s linear infinite;
+    -ms-animation: progress-bar-stripes 2s linear infinite;
+    -o-animation: progress-bar-stripes 2s linear infinite;
+    animation: progress-bar-stripes 2s linear infinite;}
+
+@keyframes progress-bar-stripes
+{
+    0% {
+        background-position: -20px 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+} */
