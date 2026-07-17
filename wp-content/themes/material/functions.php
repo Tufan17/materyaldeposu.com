@@ -40,7 +40,7 @@ function materyal_havuzu_kurulum() {
 
     // 2. Sınıflandırma: Sınıf Grubu (Kategori 1)
     register_taxonomy('sinif_grubu', array('materyaller'), array(
-        'hierarchical'      => false,
+        'hierarchical'      => true,
         'labels'            => array(
             'name'              => 'Sınıf Grupları',
             'singular_name'     => 'Sınıf Grubu',
