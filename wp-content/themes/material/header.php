@@ -684,7 +684,7 @@ width: 100%;
 <div class="elementor-widget-wrap elementor-element-populated">
 <div class="elementor-element elementor-element-d9e6e94 elementor-widget elementor-widget-wdt-logo" data-element_type="widget" data-id="d9e6e94" data-settings='{"wdt_animation_effect":"none"}' data-widget_type="wdt-logo.default">
 <div class="elementor-widget-container">
-<div class="wdt-logo-container" id="lmselementor-d9e6e94"> <a href="<?php echo esc_url(home_url('/')); ?>" rel="home"><img alt="" class="attachment-full size-full" decoding="async" height="99" loading="lazy" src="<?php echo get_template_directory_uri(); ?>/wp-content/uploads/2023/11/lms-logo.png" width="98"/></a></div> </div>
+<div class="wdt-logo-container" id="lmselementor-d9e6e94"> <a href="<?php echo esc_url(home_url('/')); ?>" rel="home"><img alt="<?php echo esc_attr(get_bloginfo('name')); ?>" class="attachment-full size-full" decoding="async" height="98" loading="lazy" src="<?php echo get_template_directory_uri(); ?>/wp-content/uploads/2023/11/lms-logo.png" width="98"/></a></div> </div>
 </div>
 </div>
 </div>

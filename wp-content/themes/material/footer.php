@@ -11,7 +11,7 @@
 <div class="elementor-element elementor-element-a66d8e0 elementor-widget__width-auto elementor-widget elementor-widget-image" data-element_type="widget" data-id="a66d8e0" data-settings='{"wdt_animation_effect":"none"}' data-widget_type="image.default">
 <div class="elementor-widget-container">
 <a href="#">
-<img alt="" class="attachment-full size-full wp-image-51" height="99" loading="lazy" src="<?php echo get_template_directory_uri(); ?>/wp-content/uploads/2023/11/lms-logo.png" width="98"/> </a>
+<img alt="<?php echo esc_attr(get_bloginfo('name')); ?>" class="attachment-full size-full wp-image-51" height="98" loading="lazy" src="<?php echo get_template_directory_uri(); ?>/wp-content/uploads/2023/11/lms-logo.png" width="98"/> </a>
 </div>
 </div>
 </div>
