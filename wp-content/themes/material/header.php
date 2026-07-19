@@ -662,6 +662,23 @@ width: 100%;
 <link href="<?php echo get_template_directory_uri(); ?>/wp-content/plugins/wedesigntech-elementor-addon/inc/core/widgets/assets/css/style__ver_1_0_0.css" id="wdt-elementor-widgets-css" media="all" rel="stylesheet"/>
 <link href="<?php echo get_template_directory_uri(); ?>/wp-content/plugins/wedesigntech-elementor-addon/assets/css/animations.min__ver_1_0_0.css" id="wdt-e-animations-css" media="all" rel="stylesheet"/>
 <?php wp_head(); ?>
+<style>
+/* Hamburger (mobil) menüde SADECE ana menüler görünsün — alt menüleri gizle */
+.mobile-menu ul.sub-menu,
+.mobile-menu ul.children,
+.mobile-menu li.go-back,
+.mobile-menu li.see-all,
+.mobile-menu li.close-nav {
+    display: none !important;
+}
+/* Alt menü ok/gösterge işaretlerini kaldır */
+.mobile-menu li.menu-item-has-children > a::after,
+.mobile-menu li.menu-item-has-children > a::before,
+.mobile-menu li.page_item_has_children > a::after {
+    content: none !important;
+    display: none !important;
+}
+</style>
 </head>
 <body class="home-page bp-nouveau home wp-singular page-template page-template-elementor_header_footer page page-id-26 wp-theme-lms-elementor theme-lms-elementor wdt-fade has-go-to-top lmselementor-plus-1.0.2 lmselementor-pro-1.0.0 woocommerce-no-js tribe-no-js elementor-default elementor-template-full-width elementor-kit-16 elementor-page elementor-page-26 no-js">
 <a class="skip-link screen-reader-text" href="#main">Skip to content</a>

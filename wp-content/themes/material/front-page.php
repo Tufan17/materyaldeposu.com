@@ -244,6 +244,47 @@ if (!empty($ana_kademeler) && !is_wp_error($ana_kademeler)):
 .dynamic-category-link:hover { transform: translateY(-5px) !important; }
 .dynamic-category-link:hover h5 { color: #F2672E !important; }
 .dynamic-category-link:hover div { box-shadow: 0 15px 30px rgba(0,0,0,0.2) !important; }
+
+/* Kademe kutulari: mobilde 2x2 grid */
+@media (max-width: 767px) {
+    .elementor-element-e9d51c9 > .elementor-container {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    .elementor-element-e9d51c9 > .elementor-container > .custom-dynamic-category-box {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .custom-dynamic-category-box .dynamic-category-link { padding: 15px 5px !important; }
+    .custom-dynamic-category-box .dynamic-category-link h5 { font-size: 16px !important; }
+}
+
+/* Banner reklamlar: mobilde carousel yerine GRID (hepsi görünsün) */
+@media (max-width: 767px) {
+    #wdt-image-box-swiper-6133a67 { overflow: visible !important; }
+    #wdt-image-box-swiper-6133a67 .swiper-wrapper {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    #wdt-image-box-swiper-6133a67 .swiper-slide {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+    }
+    #wdt-image-box-swiper-6133a67 .swiper-slide img {
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        border-radius: 10px !important;
+    }
+    .wdt-swiper-pagination-6133a67 { display: none !important; }
+}
 </style>
 <?php
     foreach ($ana_kademeler as $kademe):
