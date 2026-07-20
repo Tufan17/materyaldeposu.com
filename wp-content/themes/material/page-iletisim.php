@@ -42,8 +42,12 @@ $material_cards = array(
 ?>
 
 <?php // ---------------- Hero ---------------- ?>
-<?php // pt-* seffaf header'in uzerine binmemesi icin fazladan pay birakiyor. ?>
-<section class="relative isolate overflow-hidden bg-gradient-to-br from-olive-900 to-olive-700 px-5 pb-28 pt-36 text-center text-white lg:pt-44">
+<?php
+// pt-*  : seffaf header'in uzerine binmemesi icin pay.
+// pb-*  : iletisim kartlari asagida -mt ile buraya tastigi icin fazladan pay;
+//         ikisi birbirine bagli, birini degistirirken digerine de bak.
+?>
+<section class="relative isolate overflow-hidden bg-gradient-to-br from-olive-900 to-olive-700 px-5 pb-44 pt-36 text-center text-white lg:pt-44">
 	<div class="absolute -left-24 -top-40 -z-10 h-[500px] w-[500px] rounded-full bg-sunset-500/20 blur-3xl"></div>
 	<div class="absolute -bottom-40 -right-16 -z-10 h-96 w-96 rounded-full bg-sand/20 blur-3xl"></div>
 
@@ -62,7 +66,12 @@ $material_cards = array(
 </section>
 
 <div class="bg-cream pb-24">
-	<div class="<?php material_the_class( 'shell', '-mt-14' ); ?>">
+	<?php
+	// Kartlar hero'nun icine tasiyor; hero'daki pb-44 bu tasmayi karsiliyor.
+	// relative z-10 sart: hero "relative" oldugu icin statik kardesin uzerine
+	// boyanir ve kartlarin ust kismini keserdi.
+	?>
+	<div class="<?php material_the_class( 'shell', 'relative z-10 -mt-28' ); ?>">
 
 		<?php // ---------------- Iletisim kartlari ---------------- ?>
 		<ul class="grid gap-8 lg:grid-cols-3">
@@ -139,11 +148,15 @@ $material_cards = array(
 				</form>
 			</div>
 
-			<div class="relative min-h-[350px] bg-sand lg:min-h-full">
+			<?php
+			// Mobilde sabit oranli bir blok, genis ekranda form yuksekligini
+			// doldurur. Absolute yerine grid hucresini kaplamasi daha guvenli.
+			?>
+			<div class="relative min-h-[320px] bg-sand">
 				<iframe
 					src="<?php echo esc_url( $material_map ); ?>"
 					title="Harita"
-					class="absolute inset-0 h-full w-full border-0"
+					class="absolute inset-0 block h-full w-full border-0"
 					allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
 				></iframe>
 			</div>

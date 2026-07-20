@@ -14,11 +14,11 @@ $material_hero_bg = get_theme_mod(
 ?>
 
 <?php // ============================ HERO ============================ ?>
-<section class="relative isolate overflow-hidden">
+<section class="relative isolate overflow-hidden min-h-[90vh]">
 	<img
 		src="<?php echo esc_url( $material_hero_bg ); ?>"
 		alt=""
-		class="absolute inset-0 -z-20 h-full w-full object-cover"
+		class="absolute inset-0 -z-20 h-full w-full object-cover object-top"
 		fetchpriority="high"
 	>
 	<div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/55 to-ink/75"></div>

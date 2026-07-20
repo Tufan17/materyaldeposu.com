@@ -69,10 +69,17 @@ get_header(); ?>
 
 					<?php // ---------- Indirilebilir dosyalar ---------- ?>
 					<?php
-					$material_files    = array();
-					$material_meta_id  = get_post_meta( get_the_ID(), 'yuklenen_dosya_id', true );
+					$material_files = array();
 
-					if ( $material_meta_id ) {
+					// Paylas formundan gelen dosyalar (coklu alan + eski tekil alan)
+					// ve posta iliştirilmiş diger medyalar birlestiriliyor.
+					$material_meta_ids = (array) get_post_meta( get_the_ID(), 'yuklenen_dosya_ids', true );
+					$material_meta_ids = array_filter( array_merge(
+						$material_meta_ids,
+						array( get_post_meta( get_the_ID(), 'yuklenen_dosya_id', true ) )
+					) );
+
+					foreach ( $material_meta_ids as $material_meta_id ) {
 						$material_meta_post = get_post( $material_meta_id );
 						if ( $material_meta_post ) {
 							$material_files[ $material_meta_id ] = $material_meta_post;
