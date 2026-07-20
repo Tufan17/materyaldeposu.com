@@ -296,7 +296,7 @@ add_action('save_post_materyaller', function($post_id) {
 // ==========================================
 // 4. AJAX UÇ NOKTALARI
 // ==========================================
-add_action('wp_ajax_get_bagli_dersler', function() {
+function material_ajax_bagli_dersler() {
     $sinif_id = isset($_POST['sinif_id']) ? intval($_POST['sinif_id']) : 0;
     
     // Eğer admin panelindeysek (ve id istiyorsak) kontrolü
@@ -321,8 +321,10 @@ add_action('wp_ajax_get_bagli_dersler', function() {
         }
     }
     wp_die();
-});
-add_action('wp_ajax_nopriv_get_bagli_dersler', 'wp_ajax_get_bagli_dersler');
+}
+// Giris yapmamis ziyaretciler de arama sayfasindaki ders filtresini kullaniyor.
+add_action('wp_ajax_get_bagli_dersler', 'material_ajax_bagli_dersler');
+add_action('wp_ajax_nopriv_get_bagli_dersler', 'material_ajax_bagli_dersler');
 
 add_action('wp_ajax_get_bagli_konular', function() {
     $ders_id = isset($_POST['ders_id']) ? intval($_POST['ders_id']) : 0;

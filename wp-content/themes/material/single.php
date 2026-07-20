@@ -1,176 +1,199 @@
 <?php
 /**
- * Tekil Blog Yazısı (Post) Şablonu - Premium Tasarım ve Yan Menü
+ * Tekil blog yazisi sablonu (yan menulu).
+ *
+ * @package Material
  */
+
 get_header(); ?>
 
-<div class="wdt-main-content-wrapper" style="padding: 150px 20px 80px; background: #fdf6ea; position: relative;">
-    
-    <!-- Arka plan süslemeleri için ayrı kapsayıcı (Taşmaları önlemek ve sticky'yi bozmamak için) -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0;">
-        <div style="position: absolute; top: -100px; left: -100px; width: 500px; height: 500px; background: rgba(131,140,72,0.06); border-radius: 50%; filter: blur(60px);"></div>
-        <div style="position: absolute; bottom: 5%; right: -150px; width: 400px; height: 400px; background: rgba(218,133,61,0.06); border-radius: 50%; filter: blur(50px);"></div>
-    </div>
+<div class="relative isolate overflow-hidden bg-cream py-16 lg:py-24">
 
-    <div class="container" style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;">
-        
-        <?php while ( have_posts() ) : the_post(); ?>
-            <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
-                
-                <!-- SOL TARAF: ANA İÇERİK -->
-                <div class="main-article-content" style="flex: 1 1 700px; background: #fff; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid rgba(131,140,72,0.08);">
-                    
-                    <?php if ( has_post_thumbnail() ) : ?>
-                        <div class="entry-thumb" style="width: 100%; height: 450px; overflow: hidden; position: relative;">
-                            <?php the_post_thumbnail('full', ['style' => 'width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 0.5s ease;']); ?>
-                            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events: none;"></div>
-                        </div>
-                    <?php endif; ?>
+	<?php // Arka plan susleri. ?>
+	<div class="pointer-events-none absolute -left-24 -top-24 -z-10 h-[500px] w-[500px] rounded-full bg-olive-500/[0.06] blur-3xl"></div>
+	<div class="pointer-events-none absolute -right-36 bottom-[5%] -z-10 h-96 w-96 rounded-full bg-sunset-500/[0.06] blur-3xl"></div>
 
-                    <header class="entry-header" style="background: #fff; padding: 50px 50px 30px; position: relative;">
-                        <!-- Kategoriler -->
-                        <div style="position: absolute; top: -20px; left: 50px; display: flex; gap: 10px;">
-                            <?php
-                            $categories = get_the_category();
-                            if ( ! empty( $categories ) ) {
-                                foreach( $categories as $category ) {
-                                    echo '<a href="' . esc_url( get_category_link( $category->term_id ) ) . '" style="background: #838c48; color: #fff; padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 10px rgba(131,140,72,0.3); transition: transform 0.3s ease;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">' . esc_html( $category->name ) . '</a>';
-                                }
-                            }
-                            ?>
-                        </div>
+	<div class="mx-auto w-full max-w-[1200px] px-5 lg:px-8">
+		<?php while ( have_posts() ) : the_post(); ?>
 
-                        <?php the_title( '<h1 class="entry-title" style="font-family: \'Playfair Display\', serif; font-size: 40px; font-weight: 800; color: #222; margin-top: 15px; margin-bottom: 20px; line-height: 1.25;">', '</h1>' ); ?>
-                        
-                        <div class="entry-meta" style="display: flex; align-items: center; gap: 20px; font-family: 'Inter', sans-serif; font-size: 14px; color: #777; border-top: 1px solid #eee; padding-top: 20px;">
-                            <span class="meta-author" style="display: flex; align-items: center; gap: 8px;">
-                                <?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', '', array('style' => 'border-radius:50%;') ); ?>
-                                <strong style="color: #444;"><?php the_author(); ?></strong>
-                            </span>
-                            <span class="meta-date" style="display: flex; align-items: center; gap: 6px;">
-                                <i class="fa fa-calendar-alt" style="color: #ccc;"></i> <?php echo get_the_date(); ?>
-                            </span>
-                        </div>
-                    </header>
+			<div class="flex flex-col items-start gap-10 lg:flex-row">
 
-                    <div class="entry-content-wrap" style="padding: 0 50px 50px;">
-                        <div class="entry-content blog-post-body" style="font-family: 'Inter', sans-serif; font-size: 17px; line-height: 1.85; color: #4a4a4a;">
-                            <?php 
-                            the_content(); 
-                            wp_link_pages( array(
-                                'before' => '<div class="page-links" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-weight: bold;">' . esc_html__( 'Sayfalar:', 'material' ),
-                                'after'  => '</div>',
-                            ) );
-                            ?>
-                        </div>
-                    </div>
+				<?php // ================= ANA ICERIK ================= ?>
+				<article <?php post_class( 'w-full min-w-0 flex-1 overflow-hidden rounded-card border border-olive-500/10 bg-white shadow-card' ); ?>>
 
-                    <div class="entry-footer" style="padding: 30px 50px; background: #fafafa; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-                        <div class="post-tags" style="flex: 1;">
-                            <?php 
-                            $tags = get_the_tags();
-                            if ( $tags ) {
-                                echo '<i class="fa fa-tags" style="color: #838c48; margin-right: 10px;"></i>';
-                                foreach ( $tags as $tag ) {
-                                    echo '<a href="' . esc_url( get_tag_link( $tag->term_id ) ) . '" style="display: inline-block; background: #fff; padding: 5px 14px; border-radius: 8px; font-size: 13px; color: #555; text-decoration: none; border: 1px solid #e0e0e0; margin-right: 8px; margin-bottom: 8px; transition: all 0.3s ease;" onmouseover="this.style.borderColor=\'#838c48\'; this.style.color=\'#838c48\';" onmouseout="this.style.borderColor=\'#e0e0e0\'; this.style.color=\'#555\';">' . esc_html( $tag->name ) . '</a>';
-                                }
-                            }
-                            ?>
-                        </div>
-                        
-                        <div class="post-share" style="display: flex; gap: 12px;">
-                            <span style="font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: #222; display: flex; align-items: center; margin-right: 5px;">Paylaş:</span>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>" target="_blank" style="width: 40px; height: 40px; border-radius: 12px; background: #eff3fa; color: #3b5998; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.background='#3b5998'; this.style.color='#fff';" onmouseout="this.style.background='#eff3fa'; this.style.color='#3b5998';"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank" style="width: 40px; height: 40px; border-radius: 12px; background: #e8f5fd; color: #1da1f2; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.background='#1da1f2'; this.style.color='#fff';" onmouseout="this.style.background='#e8f5fd'; this.style.color='#1da1f2';"><i class="fab fa-twitter"></i></a>
-                            <a href="https://wa.me/?text=<?php echo urlencode(get_the_title() . ' - ' . get_permalink()); ?>" target="_blank" style="width: 40px; height: 40px; border-radius: 12px; background: #e9fbf0; color: #25d366; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.background='#25d366'; this.style.color='#fff';" onmouseout="this.style.background='#e9fbf0'; this.style.color='#25d366';"><i class="fab fa-whatsapp"></i></a>
-                        </div>
-                    </div>
-                    
-                    <?php
-                    if ( comments_open() || get_comments_number() ) :
-                        echo '<div style="padding: 0 50px; background: #fff;">';
-                        comments_template();
-                        echo '</div>';
-                    endif;
-                    ?>
-                </div>
+					<?php if ( has_post_thumbnail() ) : ?>
+						<div class="relative h-72 w-full overflow-hidden sm:h-[450px]">
+							<?php the_post_thumbnail( 'full', array( 'class' => 'block h-full w-full object-cover' ) ); ?>
+							<div class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent"></div>
+						</div>
+					<?php endif; ?>
 
-                <!-- SAĞ TARAF: YAN MENÜ (ÖNERİLENLER) -->
-                <aside class="sidebar-recent-posts" style="flex: 0 0 350px; position: sticky; top: 120px;">
-                    <div style="background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(131,140,72,0.1);">
-                        <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 800; color: #222; margin-bottom: 25px; border-bottom: 2px solid #838c48; padding-bottom: 15px; display: inline-block;">
-                            Son Yazılar
-                        </h3>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <?php
-                            $recent_args = array(
-                                'post_type'      => 'post',
-                                'posts_per_page' => 4,
-                                'post_status'    => 'publish',
-                                'post__not_in'   => array( get_the_ID() ) // Mevcut yazıyı hariç tut
-                            );
-                            $recent_posts = new WP_Query( $recent_args );
+					<header class="relative px-7 pb-8 pt-12 sm:px-12">
+						<?php $material_categories = get_the_category(); ?>
+						<?php if ( ! empty( $material_categories ) ) : ?>
+							<div class="absolute -top-5 left-7 flex flex-wrap gap-2.5 sm:left-12">
+								<?php foreach ( $material_categories as $material_category ) : ?>
+									<a
+										href="<?php echo esc_url( get_category_link( $material_category->term_id ) ); ?>"
+										class="rounded-full bg-olive-500 px-4 py-2 text-[13px] font-bold text-white shadow-pill transition-transform hover:-translate-y-0.5"
+									>
+										<?php echo esc_html( $material_category->name ); ?>
+									</a>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
 
-                            if ( $recent_posts->have_posts() ) :
-                                while ( $recent_posts->have_posts() ) : $recent_posts->the_post();
-                                ?>
-                                    <a href="<?php the_permalink(); ?>" class="suggested-post-card" style="display: flex; gap: 15px; align-items: center; text-decoration: none; group; transition: transform 0.2s ease;" onmouseover="this.style.transform='translateX(5px)';" onmouseout="this.style.transform='translateX(0)';">
-                                        <div style="flex: 0 0 90px; height: 90px; border-radius: 12px; overflow: hidden; background: #eee;">
-                                            <?php if ( has_post_thumbnail() ) {
-                                                the_post_thumbnail('thumbnail', ['style' => 'width: 100%; height: 100%; object-fit: cover;']);
-                                            } else {
-                                                echo '<div style="width:100%; height:100%; background:#838c48; opacity:0.2;"></div>';
-                                            } ?>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h4 style="font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #333; margin: 0 0 5px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                <?php the_title(); ?>
-                                            </h4>
-                                            <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px;">
-                                                <i class="fa fa-clock" style="font-size: 10px;"></i> <?php echo get_the_date('d M Y'); ?>
-                                            </span>
-                                        </div>
-                                    </a>
-                                <?php
-                                endwhile;
-                                wp_reset_postdata();
-                            else:
-                                echo '<p style="color:#777; font-size:14px;">Farklı bir yazı bulunamadı.</p>';
-                            endif;
-                            ?>
-                        </div>
-                    </div>
-                </aside>
+						<h1 class="<?php material_the_class( 'title', 'text-3xl sm:text-4xl' ); ?>">
+							<?php the_title(); ?>
+						</h1>
 
-            </div>
-        <?php endwhile; ?>
+						<div class="mt-6 flex flex-wrap items-center gap-5 border-t border-dune/60 pt-5 text-sm text-slate/80">
+							<span class="flex items-center gap-2.5">
+								<?php echo get_avatar( get_the_author_meta( 'ID' ), 32, '', '', array( 'class' => 'rounded-full' ) ); ?>
+								<strong class="font-semibold text-ink"><?php the_author(); ?></strong>
+							</span>
+							<span class="flex items-center gap-2">
+								<svg class="h-4 w-4 text-dune" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+									<path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3a.75.75 0 0 1 1.5 0v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9H3.75v7.5c0 .83.67 1.5 1.5 1.5h13.5c.83 0 1.5-.67 1.5-1.5v-7.5Z" clip-rule="evenodd"/>
+								</svg>
+								<?php echo esc_html( get_the_date() ); ?>
+							</span>
+						</div>
+					</header>
 
-    </div>
+					<div class="px-7 pb-12 sm:px-12">
+						<div class="<?php material_the_class( 'prose', 'prose-lg prose-img:rounded-xl prose-img:shadow-card' ); ?>">
+							<?php
+							the_content();
+							wp_link_pages( array(
+								'before' => '<div class="mt-10 border-t border-dune/60 pt-5 font-bold">Sayfalar:',
+								'after'  => '</div>',
+							) );
+							?>
+						</div>
+					</div>
+
+					<?php // ---------- Etiketler + paylas ---------- ?>
+					<?php
+					$material_permalink = rawurlencode( get_permalink() );
+					$material_the_title = rawurlencode( get_the_title() );
+
+					$material_share = array(
+						'Facebook' => array(
+							'url'   => 'https://www.facebook.com/sharer/sharer.php?u=' . $material_permalink,
+							'class' => 'bg-blue-50 text-[#3b5998] hover:bg-[#3b5998] hover:text-white',
+							'path'  => 'M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07Z',
+						),
+						'Twitter'  => array(
+							'url'   => 'https://twitter.com/intent/tweet?url=' . $material_permalink . '&text=' . $material_the_title,
+							'class' => 'bg-sky-50 text-[#1da1f2] hover:bg-[#1da1f2] hover:text-white',
+							'path'  => 'M18.9 1.2h3.7l-8.1 9.2 9.5 12.5h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.8L0 1.2h7.6l5.2 6.9 6.1-6.9Zm-1.3 19.5h2L6.5 3.3H4.3l13.3 17.4Z',
+						),
+						'WhatsApp' => array(
+							'url'   => 'https://wa.me/?text=' . rawurlencode( get_the_title() . ' - ' . get_permalink() ),
+							'class' => 'bg-emerald-50 text-[#25d366] hover:bg-[#25d366] hover:text-white',
+							'path'  => 'M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4M12 2a10 10 0 0 0-8.5 15.3L2 22.5l5.4-1.4A10 10 0 1 0 12 2Zm0 18.3c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.2.8.9-3.1-.2-.3a8.3 8.3 0 1 1 7.3 4Z',
+						),
+					);
+
+					$material_tags = get_the_tags();
+					?>
+					<footer class="flex flex-wrap items-center justify-between gap-6 border-t border-dune/60 bg-cream/60 px-7 py-7 sm:px-12">
+
+						<div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+							<?php if ( $material_tags ) : ?>
+								<svg class="mr-1 h-4 w-4 shrink-0 text-olive-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+									<path fill-rule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.32c0 .8.32 1.56.88 2.12l9 9a3 3 0 0 0 4.24 0l4.32-4.32a3 3 0 0 0 0-4.24l-9-9a3 3 0 0 0-2.12-.88H5.25Zm2.25 5.25a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" clip-rule="evenodd"/>
+								</svg>
+								<?php foreach ( $material_tags as $material_tag ) : ?>
+									<a
+										href="<?php echo esc_url( get_tag_link( $material_tag->term_id ) ); ?>"
+										class="rounded-lg border border-dune bg-white px-3.5 py-1.5 text-[13px] text-slate transition-colors hover:border-olive-500 hover:text-olive-600"
+									>
+										<?php echo esc_html( $material_tag->name ); ?>
+									</a>
+								<?php endforeach; ?>
+							<?php endif; ?>
+						</div>
+
+						<div class="flex items-center gap-3">
+							<span class="text-sm font-bold text-ink">Paylaş:</span>
+							<?php foreach ( $material_share as $material_label => $material_net ) : ?>
+								<a
+									href="<?php echo esc_url( $material_net['url'] ); ?>"
+									target="_blank" rel="noopener noreferrer"
+									class="flex h-10 w-10 items-center justify-center rounded-xl transition-colors <?php echo esc_attr( $material_net['class'] ); ?>"
+								>
+									<span class="screen-reader-text"><?php echo esc_html( $material_label ); ?></span>
+									<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+										<path d="<?php echo esc_attr( $material_net['path'] ); ?>"/>
+									</svg>
+								</a>
+							<?php endforeach; ?>
+						</div>
+					</footer>
+
+					<?php if ( comments_open() || get_comments_number() ) : ?>
+						<div class="px-7 py-10 sm:px-12">
+							<?php comments_template(); ?>
+						</div>
+					<?php endif; ?>
+				</article>
+
+				<?php // ================= YAN MENU ================= ?>
+				<aside class="w-full shrink-0 lg:sticky lg:top-28 lg:w-[350px]">
+					<div class="rounded-2xl border border-olive-500/10 bg-white p-7 shadow-card">
+						<h2 class="mb-6 inline-block border-b-2 border-olive-500 pb-3.5 font-display text-2xl font-extrabold text-ink">
+							Son Yazılar
+						</h2>
+
+						<?php
+						$material_recent = new WP_Query( array(
+							'post_type'      => 'post',
+							'posts_per_page' => 4,
+							'post_status'    => 'publish',
+							'post__not_in'   => array( get_the_ID() ),
+							'no_found_rows'  => true,
+						) );
+						?>
+
+						<?php if ( $material_recent->have_posts() ) : ?>
+							<ul class="flex flex-col gap-5">
+								<?php while ( $material_recent->have_posts() ) : $material_recent->the_post(); ?>
+									<li>
+										<a href="<?php the_permalink(); ?>" class="flex items-center gap-4 transition-transform duration-200 hover:translate-x-1.5">
+											<div class="h-[90px] w-[90px] shrink-0 overflow-hidden rounded-xl bg-sand">
+												<?php if ( has_post_thumbnail() ) : ?>
+													<?php the_post_thumbnail( 'thumbnail', array( 'class' => 'h-full w-full object-cover' ) ); ?>
+												<?php else : ?>
+													<div class="h-full w-full bg-olive-500/20"></div>
+												<?php endif; ?>
+											</div>
+											<div class="min-w-0 flex-1">
+												<h3 class="line-clamp-2 text-[15px] font-bold leading-snug text-ink">
+													<?php the_title(); ?>
+												</h3>
+												<span class="mt-1.5 flex items-center gap-1.5 text-xs text-slate/70">
+													<svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+														<path fill-rule="evenodd" d="M12 2.25a9.75 9.75 0 1 0 0 19.5 9.75 9.75 0 0 0 0-19.5ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .28.16.54.41.67l4 2a.75.75 0 1 0 .68-1.34l-3.59-1.8V6Z" clip-rule="evenodd"/>
+													</svg>
+													<?php echo esc_html( get_the_date( 'd M Y' ) ); ?>
+												</span>
+											</div>
+										</a>
+									</li>
+								<?php endwhile; ?>
+							</ul>
+						<?php else : ?>
+							<p class="text-sm text-slate/70">Farklı bir yazı bulunamadı.</p>
+						<?php endif;
+						wp_reset_postdata();
+						?>
+					</div>
+				</aside>
+			</div>
+		<?php endwhile; ?>
+	</div>
 </div>
-
-<style>
-/* CSS Reset ve Ekstra Stiller */
-.blog-post-body p { margin-bottom: 20px; }
-.blog-post-body h1, .blog-post-body h2, .blog-post-body h3, .blog-post-body h4 {
-    margin-top: 40px; margin-bottom: 20px; font-family: 'Playfair Display', serif; color: #222; font-weight: 700;
-}
-.blog-post-body h2 { font-size: 28px; }
-.blog-post-body h3 { font-size: 24px; }
-.blog-post-body img { max-width: 100%; height: auto; border-radius: 12px; margin: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-.blog-post-body a { color: #838c48; text-decoration: underline; text-decoration-color: rgba(131,140,72,0.3); }
-.blog-post-body a:hover { text-decoration-color: #838c48; }
-
-/* Responsive Düzenleme */
-@media (max-width: 992px) {
-    .main-article-content { flex: 1 1 100% !important; }
-    .sidebar-recent-posts { flex: 1 1 100% !important; position: static !important; }
-}
-@media (max-width: 768px) {
-    .wdt-main-content-wrapper { padding: 120px 15px 50px !important; }
-    .entry-header, .entry-content-wrap, .entry-footer { padding: 30px !important; }
-    .entry-title { font-size: 32px !important; }
-}
-</style>
 
 <?php get_footer(); ?>

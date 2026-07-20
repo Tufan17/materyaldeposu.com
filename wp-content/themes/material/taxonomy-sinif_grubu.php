@@ -1,201 +1,249 @@
 <?php
 /**
- * Sınıf Grupları Taxonomy Şablonu
- * (Sınıf -> Ders -> Konu -> Materyal Hiyerarşisi)
+ * Sinif gruplari taksonomi sablonu.
+ * Hiyerarsi: Sinif -> Ders -> Konu -> Materyal.
+ *
+ * @package Material
  */
-get_header(); 
 
-$current_term = get_queried_object();
-$secili_ders = isset($_GET['ders']) ? sanitize_text_field($_GET['ders']) : '';
-$secili_konu = isset($_GET['konu']) ? sanitize_text_field($_GET['konu']) : '';
+get_header();
 
-// 1. Durum: Alt sınıfları kontrol et (Örn: Lise -> 9, 10, 11)
-$children = get_terms( array(
-    'taxonomy'   => 'sinif_grubu',
-    'parent'     => $current_term->term_id,
-    'hide_empty' => false,
+$material_term  = get_queried_object();
+$material_ders  = isset( $_GET['ders'] ) ? sanitize_text_field( wp_unslash( $_GET['ders'] ) ) : '';
+$material_konu  = isset( $_GET['konu'] ) ? sanitize_text_field( wp_unslash( $_GET['konu'] ) ) : '';
+
+// Alt siniflar (orn. Lise -> 9, 10, 11).
+$material_children = get_terms( array(
+	'taxonomy'   => 'sinif_grubu',
+	'parent'     => $material_term->term_id,
+	'hide_empty' => false,
 ) );
 
-if ( ! is_wp_error( $children ) && ! empty( $children ) ) {
-    usort( $children, function( $a, $b ) {
-        $order_a = (int) get_term_meta( $a->term_id, 'sinif_grubu_order', true );
-        $order_b = (int) get_term_meta( $b->term_id, 'sinif_grubu_order', true );
-        if ( $order_a == $order_b ) {
-            return strnatcmp( $a->name, $b->name );
-        }
-        return $order_a - $order_b;
-    });
+if ( ! is_wp_error( $material_children ) && ! empty( $material_children ) ) {
+	usort( $material_children, function ( $a, $b ) {
+		$order_a = (int) get_term_meta( $a->term_id, 'sinif_grubu_order', true );
+		$order_b = (int) get_term_meta( $b->term_id, 'sinif_grubu_order', true );
+
+		return $order_a === $order_b ? strnatcmp( $a->name, $b->name ) : $order_a - $order_b;
+	} );
+}
+
+// Baslik ve breadcrumb icin secili terimler.
+$material_ders_term = $material_ders ? get_term_by( 'slug', $material_ders, 'dersler' ) : null;
+$material_konu_term = $material_konu ? get_term_by( 'slug', $material_konu, 'konular' ) : null;
+
+if ( $material_konu_term ) {
+	$material_heading = $material_konu_term->name . ' Materyalleri';
+} elseif ( $material_ders_term ) {
+	$material_heading = $material_ders_term->name . ' Konuları';
+} else {
+	$material_heading = $material_term->name;
 }
 ?>
 
-<div class="wdt-main-content-wrapper" style="padding: 150px 20px 60px; background: #fdf6ea; min-height: 80vh;">
-    <div class="container" style="max-width: 1200px; margin: 0 auto;">
-        
-        <header class="page-header" style="text-align: center; margin-bottom: 50px;">
-            <?php 
-            // Breadcrumbs (Ekmek Kırıntıları) oluştur
-            $breadcrumbs = array();
-            $breadcrumbs[] = '<a href="'.esc_url(get_term_link($current_term)).'" style="color:#838C48; text-decoration:none;">'.esc_html($current_term->name).'</a>';
-            
-            if ( $secili_ders ) {
-                $ders_term = get_term_by('slug', $secili_ders, 'dersler');
-                if ( $ders_term ) {
-                    $breadcrumbs[] = '<a href="'.esc_url(add_query_arg('ders', $secili_ders, get_term_link($current_term))).'" style="color:#838C48; text-decoration:none;">'.esc_html($ders_term->name).'</a>';
-                }
-            }
-            if ( $secili_konu ) {
-                $konu_term = get_term_by('slug', $secili_konu, 'konular');
-                if ( $konu_term ) {
-                    $breadcrumbs[] = '<span style="color:#666;">'.esc_html($konu_term->name).'</span>';
-                }
-            }
-            ?>
-            <div style="display: inline-block; font-size: 14px; font-weight: 700; color: #838C48; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; background: rgba(131,140,72,0.1); padding: 5px 15px; border-radius: 20px;">
-                <i class="fa fa-folder-open" style="margin-right:5px;"></i> <?php echo implode(' <span style="color:#ccc; margin:0 5px;">/</span> ', $breadcrumbs); ?>
-            </div>
+<header class="relative isolate overflow-hidden border-b border-dune/50 bg-sand py-16 text-center lg:py-20">
+	<div class="absolute -left-20 -top-20 -z-10 h-72 w-72 rounded-full bg-olive-500/5 blur-3xl"></div>
+	<div class="absolute -bottom-24 -right-20 -z-10 h-72 w-72 rounded-full bg-sunset-500/5 blur-3xl"></div>
 
-            <h1 class="page-title" style="font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 800; color: #303030; margin-bottom: 20px;">
-                <?php 
-                if ( $secili_konu && isset($konu_term) ) {
-                    echo esc_html($konu_term->name) . ' Materyalleri';
-                } elseif ( $secili_ders && isset($ders_term) ) {
-                    echo esc_html($ders_term->name) . ' Konuları';
-                } else {
-                    echo esc_html($current_term->name);
-                }
-                ?>
-            </h1>
-        </header>
+	<div class="<?php material_the_class( 'shell' ); ?>">
 
-        <?php 
-        // AŞAMA 1: EĞER ALT SINIFLAR VARSA (Örn: Lise -> 9. Sınıf)
-        if ( !empty($children) && !is_wp_error($children) ) : 
-        ?>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; margin-bottom: 60px;">
-                <?php foreach ( $children as $child ) : ?>
-                    <a href="<?php echo esc_url(get_term_link($child)); ?>" style="display: block; text-decoration: none;">
-                        <div style="background: #fff; padding: 40px 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(131,140,72,0.1); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 35px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.05)';">
-                            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: linear-gradient(135deg, rgba(131,140,72,0.1), rgba(218,133,61,0.1)); border-radius: 18px; display: flex; align-items: center; justify-content: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#838C48"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
-                            </div>
-                            <h3 style="font-family: 'Raleway', sans-serif; font-size: 22px; font-weight: 700; color: #303030; margin-bottom: 10px;">
-                                <?php echo esc_html($child->name); ?>
-                            </h3>
-                            <span style="display: inline-block; font-size: 14px; font-weight: 600; color: #DA853D;">
-                                Kategoriyi İncele &rarr;
-                            </span>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            </div>
+		<?php // ---------- Breadcrumb ---------- ?>
+		<nav class="inline-flex flex-wrap items-center gap-2 rounded-full bg-olive-500/10 px-4 py-2 text-sm font-semibold text-olive-600" aria-label="Yol">
+			<svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+				<path d="M19.9 9.75A2.25 2.25 0 0 0 17.7 8H10.5l-1.6-1.9a2.25 2.25 0 0 0-1.72-.8H4.5A2.25 2.25 0 0 0 2.25 7.55v9.2A2.25 2.25 0 0 0 4.5 19h13.13c1 0 1.87-.66 2.14-1.62l1.6-5.63c.4-1.42-.66-2.83-2.14-2.83h-.5l.17.83Z"/>
+			</svg>
 
-        <?php 
-        // AŞAMA 2, 3, 4: ALT SINIF YOKSA (Örn: 9. Sınıf'tayız) -> DERS > KONU > MATERYAL
-        else: 
-            
-            // Mevcut filtrelerle postları çek
-            $tax_query = array('relation' => 'AND');
-            $tax_query[] = array('taxonomy' => 'sinif_grubu', 'field' => 'term_id', 'terms' => $current_term->term_id);
-            if ( $secili_ders ) { $tax_query[] = array('taxonomy' => 'dersler', 'field' => 'slug', 'terms' => $secili_ders); }
-            if ( $secili_konu ) { $tax_query[] = array('taxonomy' => 'konular', 'field' => 'slug', 'terms' => $secili_konu); }
+			<a href="<?php echo esc_url( get_term_link( $material_term ) ); ?>" class="transition-colors hover:text-olive-700">
+				<?php echo esc_html( $material_term->name ); ?>
+			</a>
 
-            $args = array(
-                'post_type' => 'materyaller',
-                'posts_per_page' => -1,
-                'post_status' => 'publish',
-                'tax_query' => $tax_query
-            );
-            $posts = get_posts($args);
+			<?php if ( $material_ders_term ) : ?>
+				<span class="text-olive-500/40">/</span>
+				<a href="<?php echo esc_url( add_query_arg( 'ders', $material_ders, get_term_link( $material_term ) ) ); ?>" class="transition-colors hover:text-olive-700">
+					<?php echo esc_html( $material_ders_term->name ); ?>
+				</a>
+			<?php endif; ?>
 
-            // AŞAMA 2: DERSLER LİSTESİ (Ders seçilmediyse)
-            if ( empty($secili_ders) ) {
-                $ders_ids = array();
-                foreach ($posts as $p) {
-                    $terms = wp_get_post_terms($p->ID, 'dersler', array('fields' => 'ids'));
-                    if (!is_wp_error($terms)) { foreach($terms as $id) { $ders_ids[$id] = true; } }
-                }
+			<?php if ( $material_konu_term ) : ?>
+				<span class="text-olive-500/40">/</span>
+				<span class="text-slate"><?php echo esc_html( $material_konu_term->name ); ?></span>
+			<?php endif; ?>
+		</nav>
 
-                if ( !empty($ders_ids) ) {
-                    $dersler = get_terms(array('taxonomy' => 'dersler', 'include' => array_keys($ders_ids), 'hide_empty' => false));
-                    echo '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">';
-                    foreach ($dersler as $ders) {
-                        $url = add_query_arg('ders', $ders->slug, get_term_link($current_term));
-                        echo '<a href="'.esc_url($url).'" style="display: block; text-decoration: none;">';
-                        echo '<div style="background: #fff; padding: 25px 20px; border-radius: 16px; text-align: center; border-left: 4px solid #F2672E; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: all 0.3s ease;" onmouseover="this.style.transform=\'translateY(-3px)\'; this.style.boxShadow=\'0 10px 20px rgba(0,0,0,0.1)\';" onmouseout="this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 5px 15px rgba(0,0,0,0.05)\';">';
-                        echo '<h3 style="font-family: \'Inter\', sans-serif; font-size: 18px; font-weight: 700; color: #333; margin: 0;">'.esc_html($ders->name).'</h3>';
-                        echo '<div style="margin-top: 10px; font-size: 13px; color: #888;">Konuları Gör &rarr;</div>';
-                        echo '</div></a>';
-                    }
-                    echo '</div>';
-                } else {
-                    echo '<div style="text-align:center; padding:50px; background:#fff; border-radius:15px; color:#666;">Bu sınıfa ait henüz ders veya materyal eklenmemiş.</div>';
-                }
-            }
-            
-            // AŞAMA 3: KONULAR LİSTESİ (Ders seçilmiş, Konu seçilmemişse)
-            elseif ( !empty($secili_ders) && empty($secili_konu) ) {
-                $konu_ids = array();
-                foreach ($posts as $p) {
-                    $terms = wp_get_post_terms($p->ID, 'konular', array('fields' => 'ids'));
-                    if (!is_wp_error($terms)) { foreach($terms as $id) { $konu_ids[$id] = true; } }
-                }
+		<h1 class="<?php material_the_class( 'title', 'mt-5 text-3xl sm:text-4xl lg:text-5xl' ); ?>">
+			<?php echo esc_html( $material_heading ); ?>
+		</h1>
+		<div class="mx-auto mt-5 h-1 w-16 rounded-full bg-olive-500"></div>
+	</div>
+</header>
 
-                if ( !empty($konu_ids) ) {
-                    $konular = get_terms(array('taxonomy' => 'konular', 'include' => array_keys($konu_ids), 'hide_empty' => false));
-                    echo '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">';
-                    foreach ($konular as $konu) {
-                        $url = add_query_arg(array('ders' => $secili_ders, 'konu' => $konu->slug), get_term_link($current_term));
-                        echo '<a href="'.esc_url($url).'" style="display: flex; align-items: center; justify-content: space-between; text-decoration: none; background: #fff; padding: 20px 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: all 0.2s ease;" onmouseover="this.style.boxShadow=\'0 8px 20px rgba(0,0,0,0.08)\'; this.style.background=\'#fdfdfd\';" onmouseout="this.style.boxShadow=\'0 4px 10px rgba(0,0,0,0.03)\'; this.style.background=\'#fff\';">';
-                        echo '<span style="font-family: \'Inter\', sans-serif; font-size: 16px; font-weight: 600; color: #303030;">'.esc_html($konu->name).'</span>';
-                        echo '<span style="background: rgba(131,140,72,0.1); color: #838C48; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">Materyaller <i class="fa fa-angle-right"></i></span>';
-                        echo '</a>';
-                    }
-                    echo '</div>';
-                } else {
-                    echo '<div style="text-align:center; padding:50px; background:#fff; border-radius:15px; color:#666;">Bu derse ait konu bulunamadı.</div>';
-                }
-            }
+<div class="<?php material_the_class( 'section', 'min-h-[50vh] bg-cream' ); ?>">
+	<div class="<?php material_the_class( 'shell' ); ?>">
 
-            // AŞAMA 4: MATERYALLER LİSTESİ (Ders ve Konu seçilmişse)
-            elseif ( !empty($secili_ders) && !empty($secili_konu) ) {
-                if ( count($posts) > 0 ) {
-                    echo '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px;">';
-                    foreach ( $posts as $post ) {
-                        setup_postdata($post);
-                        $tur_terms = get_the_terms($post->ID, 'materyal_turu');
-                        $tur_isim = ($tur_terms && !is_wp_error($tur_terms)) ? $tur_terms[0]->name : 'Döküman';
-                        $icon = ($tur_isim == 'Video') ? 'fa-play-circle' : (($tur_isim == 'Slayt') ? 'fa-tv' : 'fa-file-pdf');
-                        ?>
-                        <article class="materyal-card" style="background: #fff; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; height: 100%;">
-                            <div style="position: absolute; top: 20px; right: 20px; font-size: 24px; color: rgba(131,140,72,0.2);">
-                                <i class="fa <?php echo esc_attr($icon); ?>"></i>
-                            </div>
-                            <div style="display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: #838C48; padding: 4px 12px; border-radius: 20px; margin-bottom: 15px; align-self: flex-start;">
-                                <?php echo esc_html($tur_isim); ?>
-                            </div>
-                            <h3 style="font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #303030; margin-bottom: 15px; line-height: 1.3;">
-                                <?php the_title(); ?>
-                            </h3>
-                            <p style="font-family: 'Inter', sans-serif; font-size: 15px; color: #666; line-height: 1.6; margin-bottom: 25px; flex-grow: 1;">
-                                <?php echo wp_trim_words(get_the_content(), 15, '...'); ?>
-                            </p>
-                            <a href="<?php the_permalink(); ?>" style="display: block; text-align: center; width: 100%; background: rgba(218,133,61,0.1); color: #DA853D; font-weight: 700; padding: 12px 0; border-radius: 12px; text-decoration: none; transition: background 0.3s ease;" onmouseover="this.style.background='#DA853D'; this.style.color='#fff';" onmouseout="this.style.background='rgba(218,133,61,0.1)'; this.style.color='#DA853D';">
-                                İncele & İndir
-                            </a>
-                        </article>
-                        <?php
-                    }
-                    wp_reset_postdata();
-                    echo '</div>';
-                } else {
-                    echo '<div style="text-align:center; padding:50px; background:#fff; border-radius:15px; color:#666;">Bu konuya ait henüz materyal yüklenmemiş.</div>';
-                }
-            }
+		<?php if ( ! empty( $material_children ) && ! is_wp_error( $material_children ) ) : ?>
 
-        endif; 
-        ?>
+			<?php // ---------- ASAMA 1: alt siniflar ---------- ?>
+			<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+				<?php foreach ( $material_children as $material_child ) : ?>
+					<li>
+						<a href="<?php echo esc_url( get_term_link( $material_child ) ); ?>" class="group block rounded-2xl border border-olive-500/10 bg-white px-8 py-10 text-center shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+							<div class="mx-auto flex h-[70px] w-[70px] items-center justify-center rounded-[18px] bg-gradient-to-br from-olive-500/10 to-sunset-500/10 text-olive-500 transition-transform duration-300 group-hover:scale-110">
+								<svg class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+									<path d="M12 3 1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3Zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9ZM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72Z"/>
+								</svg>
+							</div>
+							<h2 class="mt-5 font-display text-xl font-bold text-ink"><?php echo esc_html( $material_child->name ); ?></h2>
+							<span class="mt-2.5 inline-flex items-center gap-1.5 text-sm font-semibold text-sunset-500">
+								Kategoriyi İncele
+								<svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+									<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd"/>
+								</svg>
+							</span>
+						</a>
+					</li>
+				<?php endforeach; ?>
+			</ul>
 
-    </div>
+		<?php
+		else :
+
+			// ---------- Alt sinif yok: ders > konu > materyal ----------
+			$material_tax_query = array(
+				'relation' => 'AND',
+				array( 'taxonomy' => 'sinif_grubu', 'field' => 'term_id', 'terms' => $material_term->term_id ),
+			);
+
+			if ( $material_ders ) {
+				$material_tax_query[] = array( 'taxonomy' => 'dersler', 'field' => 'slug', 'terms' => $material_ders );
+			}
+			if ( $material_konu ) {
+				$material_tax_query[] = array( 'taxonomy' => 'konular', 'field' => 'slug', 'terms' => $material_konu );
+			}
+
+			$material_posts = get_posts( array(
+				'post_type'      => 'materyaller',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'tax_query'      => $material_tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery
+			) );
+
+			/**
+			 * Sonuc kumesinde gecen taksonomi terimlerini toplar.
+			 */
+			$material_collect = function ( $posts, $taxonomy ) {
+				$ids = array();
+				foreach ( $posts as $p ) {
+					$terms = wp_get_post_terms( $p->ID, $taxonomy, array( 'fields' => 'ids' ) );
+					if ( ! is_wp_error( $terms ) ) {
+						foreach ( $terms as $id ) {
+							$ids[ $id ] = true;
+						}
+					}
+				}
+				return array_keys( $ids );
+			};
+			?>
+
+			<?php if ( empty( $material_ders ) ) : ?>
+
+				<?php // ---------- ASAMA 2: dersler ---------- ?>
+				<?php $material_ders_ids = $material_collect( $material_posts, 'dersler' ); ?>
+
+				<?php if ( ! empty( $material_ders_ids ) ) : ?>
+					<ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+						<?php foreach ( get_terms( array( 'taxonomy' => 'dersler', 'include' => $material_ders_ids, 'hide_empty' => false ) ) as $material_d ) : ?>
+							<li>
+								<a
+									href="<?php echo esc_url( add_query_arg( 'ders', $material_d->slug, get_term_link( $material_term ) ) ); ?>"
+									class="group block rounded-2xl border-l-4 border-sunset-500 bg-white px-6 py-7 text-center shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
+								>
+									<h2 class="text-lg font-bold text-ink"><?php echo esc_html( $material_d->name ); ?></h2>
+									<span class="mt-2.5 inline-flex items-center gap-1.5 text-[13px] text-slate/80">
+										Konuları Gör
+										<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+											<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd"/>
+										</svg>
+									</span>
+								</a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php else : ?>
+					<p class="rounded-2xl bg-white px-6 py-14 text-center text-slate shadow-card">
+						Bu sınıfa ait henüz ders veya materyal eklenmemiş.
+					</p>
+				<?php endif; ?>
+
+			<?php elseif ( empty( $material_konu ) ) : ?>
+
+				<?php // ---------- ASAMA 3: konular ---------- ?>
+				<?php $material_konu_ids = $material_collect( $material_posts, 'konular' ); ?>
+
+				<?php if ( ! empty( $material_konu_ids ) ) : ?>
+					<ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+						<?php foreach ( get_terms( array( 'taxonomy' => 'konular', 'include' => $material_konu_ids, 'hide_empty' => false ) ) as $material_k ) : ?>
+							<li>
+								<a
+									href="<?php echo esc_url( add_query_arg( array( 'ders' => $material_ders, 'konu' => $material_k->slug ), get_term_link( $material_term ) ) ); ?>"
+									class="flex items-center justify-between gap-4 rounded-xl bg-white px-6 py-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+								>
+									<span class="font-semibold text-ink"><?php echo esc_html( $material_k->name ); ?></span>
+									<span class="flex shrink-0 items-center gap-1 rounded-full bg-olive-500/10 px-3 py-1.5 text-xs font-bold text-olive-600">
+										Materyaller
+										<svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+											<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd"/>
+										</svg>
+									</span>
+								</a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php else : ?>
+					<p class="rounded-2xl bg-white px-6 py-14 text-center text-slate shadow-card">Bu derse ait konu bulunamadı.</p>
+				<?php endif; ?>
+
+			<?php else : ?>
+
+				<?php // ---------- ASAMA 4: materyaller ---------- ?>
+				<?php if ( ! empty( $material_posts ) ) : ?>
+					<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+						<?php foreach ( $material_posts as $post ) : setup_postdata( $post );
+							$material_tur = material_first_term_name( get_the_ID(), 'materyal_turu' );
+							$material_tur = $material_tur ? $material_tur : 'Döküman';
+							?>
+							<li class="relative flex flex-col rounded-2xl bg-white p-8 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+								<svg class="absolute right-5 top-5 h-6 w-6 text-olive-500/20" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.6c0-1.14-.9-2.06-2-2.06h-2.5a1.5 1.5 0 0 1-1.5-1.5V5.56c0-1.14-.9-2.06-2-2.06H8.25m3.75 0H6.9c-.77 0-1.4.65-1.4 1.44v15.12c0 .8.63 1.44 1.4 1.44h10.2c.77 0 1.4-.65 1.4-1.44V10.5A7 7 0 0 0 12 3.5Z"/>
+								</svg>
+
+								<span class="w-fit rounded-full bg-olive-500 px-3 py-1 text-xs font-bold text-white">
+									<?php echo esc_html( $material_tur ); ?>
+								</span>
+
+								<h2 class="mt-4 font-display text-xl font-bold leading-snug text-ink">
+									<a href="<?php the_permalink(); ?>" class="transition-colors hover:text-olive-600"><?php the_title(); ?></a>
+								</h2>
+
+								<p class="mt-3 flex-1 text-sm leading-relaxed text-slate">
+									<?php echo esc_html( wp_trim_words( get_the_content(), 15 ) ); ?>
+								</p>
+
+								<a href="<?php the_permalink(); ?>" class="mt-6 block rounded-xl bg-sunset-500/10 py-3 text-center font-bold text-sunset-600 transition-colors hover:bg-sunset-500 hover:text-white">
+									İncele &amp; İndir
+								</a>
+							</li>
+						<?php endforeach;
+						wp_reset_postdata(); ?>
+					</ul>
+				<?php else : ?>
+					<p class="rounded-2xl bg-white px-6 py-14 text-center text-slate shadow-card">Bu konuya ait henüz materyal yüklenmemiş.</p>
+				<?php endif; ?>
+
+			<?php endif; ?>
+
+		<?php endif; ?>
+
+	</div>
 </div>
 
 <?php get_footer(); ?>

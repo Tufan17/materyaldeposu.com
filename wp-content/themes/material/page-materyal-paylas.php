@@ -1,188 +1,225 @@
 <?php
 /**
  * Template Name: Materyal Paylaş
+ *
+ * @package Material
  */
 
-// Form gönderildi mi kontrol et
-$form_mesaji = '';
-$form_durumu = '';
+$material_message = '';
+$material_status  = '';
 
-if ( $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_materyal']) ) {
-    // Güvenlik kontrolü
-    if ( ! isset( $_POST['materyal_nonce'] ) || ! wp_verify_nonce( $_POST['materyal_nonce'], 'materyal_paylas_action' ) ) {
-        $form_mesaji = 'Güvenlik doğrulaması başarısız oldu.';
-        $form_durumu = 'error';
-    } else {
-        $baslik   = sanitize_text_field( $_POST['materyal_baslik'] );
-        $sinif    = intval( $_POST['sinif_grubu'] );
-        $ders     = intval( $_POST['dersler'] );
-        $konu     = intval( $_POST['konular'] );
-        $diger    = sanitize_text_field( $_POST['diger_konu'] );
-        $icerik   = wp_kses_post( $_POST['materyal_icerik'] );
+if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['submit_materyal'] ) ) {
 
-        if ( empty($baslik) ) {
-            $form_mesaji = 'Lütfen bir başlık giriniz.';
-            $form_durumu = 'error';
-        } else {
-            // "Diğer" seçildiyse yeni konu ekle
-            if ( $konu === -1 && !empty($diger) ) {
-                $yeni_konu = wp_insert_term( $diger, 'konular' );
-                if ( ! is_wp_error( $yeni_konu ) ) {
-                    $konu = $yeni_konu['term_id'];
-                }
-            }
+	if ( ! isset( $_POST['materyal_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['materyal_nonce'] ), 'materyal_paylas_action' ) ) {
+		$material_message = 'Güvenlik doğrulaması başarısız oldu.';
+		$material_status  = 'error';
+	} else {
+		$material_title  = sanitize_text_field( wp_unslash( $_POST['materyal_baslik'] ) );
+		$material_sinif  = intval( $_POST['sinif_grubu'] );
+		$material_ders   = intval( $_POST['dersler'] );
+		$material_konu   = intval( $_POST['konular'] );
+		$material_diger  = sanitize_text_field( wp_unslash( $_POST['diger_konu'] ) );
+		$material_body   = wp_kses_post( wp_unslash( $_POST['materyal_icerik'] ) );
 
-            // Yeni materyali taslak (pending) olarak ekle
-            $yeni_post = array(
-                'post_title'   => $baslik,
-                'post_content' => $icerik,
-                'post_status'  => 'pending',
-                'post_type'    => 'materyaller'
-            );
+		if ( empty( $material_title ) ) {
+			$material_message = 'Lütfen bir başlık giriniz.';
+			$material_status  = 'error';
+		} else {
+			// "Diger" secildiyse yeni konu terimi olustur.
+			if ( -1 === $material_konu && ! empty( $material_diger ) ) {
+				$material_new_term = wp_insert_term( $material_diger, 'konular' );
+				if ( ! is_wp_error( $material_new_term ) ) {
+					$material_konu = $material_new_term['term_id'];
+				}
+			}
 
-            $post_id = wp_insert_post( $yeni_post );
+			$material_post_id = wp_insert_post( array(
+				'post_title'   => $material_title,
+				'post_content' => $material_body,
+				'post_status'  => 'pending',
+				'post_type'    => 'materyaller',
+			) );
 
-            if ( $post_id ) {
-                // Sınıflandırmaları ata
-                if ( $sinif ) wp_set_object_terms( $post_id, intval($sinif), 'sinif_grubu' );
-                if ( $ders )  wp_set_object_terms( $post_id, intval($ders), 'dersler' );
-                if ( $konu && $konu !== -1 )  wp_set_object_terms( $post_id, intval($konu), 'konular' );
+			if ( $material_post_id ) {
+				if ( $material_sinif ) {
+					wp_set_object_terms( $material_post_id, $material_sinif, 'sinif_grubu' );
+				}
+				if ( $material_ders ) {
+					wp_set_object_terms( $material_post_id, $material_ders, 'dersler' );
+				}
+				if ( $material_konu && -1 !== $material_konu ) {
+					wp_set_object_terms( $material_post_id, $material_konu, 'konular' );
+				}
 
-                // Dosya yüklendiyse işle
-                if ( ! empty( $_FILES['materyal_dosya']['name'] ) ) {
-                    require_once( ABSPATH . 'wp-admin/includes/image.php' );
-                    require_once( ABSPATH . 'wp-admin/includes/file.php' );
-                    require_once( ABSPATH . 'wp-admin/includes/media.php' );
-                    
-                    $attachment_id = media_handle_upload( 'materyal_dosya', $post_id );
-                    
-                    if ( ! is_wp_error( $attachment_id ) ) {
-                        // Dosyayı materyale özel alan olarak kaydet
-                        update_post_meta( $post_id, 'yuklenen_dosya_id', $attachment_id );
-                    }
-                }
+				if ( ! empty( $_FILES['materyal_dosya']['name'] ) ) {
+					require_once ABSPATH . 'wp-admin/includes/image.php';
+					require_once ABSPATH . 'wp-admin/includes/file.php';
+					require_once ABSPATH . 'wp-admin/includes/media.php';
 
-                $form_mesaji = 'Teşekkürler! Materyaliniz başarıyla gönderildi ve onay için sıraya alındı.';
-                $form_durumu = 'success';
-            } else {
-                $form_mesaji = 'Sistemsel bir hata oluştu, lütfen tekrar deneyin.';
-                $form_durumu = 'error';
-            }
-        }
-    }
+					$material_attachment_id = media_handle_upload( 'materyal_dosya', $material_post_id );
+
+					if ( ! is_wp_error( $material_attachment_id ) ) {
+						update_post_meta( $material_post_id, 'yuklenen_dosya_id', $material_attachment_id );
+					}
+				}
+
+				$material_message = 'Teşekkürler! Materyaliniz başarıyla gönderildi ve onay için sıraya alındı.';
+				$material_status  = 'success';
+			} else {
+				$material_message = 'Sistemsel bir hata oluştu, lütfen tekrar deneyin.';
+				$material_status  = 'error';
+			}
+		}
+	}
 }
 
-get_header(); 
+get_header();
+
+// Form alanlarinin ortak Tailwind sinifi.
+$material_field_class = 'w-full rounded-lg border border-dune bg-white px-4 py-3 text-[15px] text-ink transition-all placeholder:text-slate/50 focus:border-olive-500 focus:outline-none focus:ring-4 focus:ring-olive-500/10';
+$material_label_class = 'mb-2 block font-semibold text-ink';
 ?>
 
-<div class="wdt-main-content-wrapper" style="padding: 150px 20px 80px; background: #fdf6ea;">
-    <div class="container" style="max-width: 800px; margin: 0 auto; background: #fff; border-radius: 24px; padding: 50px; box-shadow: 0 15px 40px rgba(0,0,0,0.06);">
-        
-        <header class="post-header" style="text-align: center; margin-bottom: 40px;">
-            <div style="display: inline-block; font-size: 13px; font-weight: 700; color: #838C48; background: rgba(131, 140, 72, 0.1); padding: 5px 15px; border-radius: 50px; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px;">
-                <i class="fa fa-share-alt"></i> BİLGİYİ PAYLAŞIN
-            </div>
-            
-            <h1 class="post-title" style="font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 800; color: #303030; line-height: 1.2; margin-bottom: 20px;">
-                Materyal Paylaş
-            </h1>
-            <p style="font-family: 'Inter', sans-serif; font-size: 16px; color: #666; line-height: 1.6;">
-                Elinizdeki eğitim dokümanlarını, soruları ve notları buradaki formu kullanarak tüm öğrencilerle ve öğretmenlerle paylaşabilirsiniz. Gönderiniz onaylandıktan sonra sistemde yayınlanacaktır.
-            </p>
-        </header>
+<div class="<?php material_the_class( 'section', 'bg-cream' ); ?>">
+	<div class="mx-auto w-full max-w-3xl px-5 lg:px-8">
+		<div class="rounded-card bg-white p-8 shadow-card sm:p-12">
 
-        <?php if ( $form_mesaji ) : ?>
-            <div style="padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center; font-weight: 600; <?php echo $form_durumu === 'success' ? 'background: #e8f5e9; color: #2e7d32;' : 'background: #ffebee; color: #c62828;'; ?>">
-                <?php echo $form_mesaji; ?>
-            </div>
-        <?php endif; ?>
+			<header class="text-center">
+				<span class="<?php material_the_class( 'badge', material_class( 'badge-olive', 'uppercase tracking-widest' ) ); ?>">
+					<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 .17 1L8.9 8.6a3 3 0 1 0 0 6.8l6.27 3.6A3 3 0 1 0 18 16a3 3 0 0 0-1.83.62L10.1 13.1a3 3 0 0 0 0-2.2l6.07-3.52A3 3 0 0 0 18 8Z"/>
+					</svg>
+					Bilgiyi Paylaşın
+				</span>
 
-        <?php if ( $form_durumu !== 'success' ) : ?>
-            <form action="" method="post" enctype="multipart/form-data" style="font-family: 'Inter', sans-serif;">
-                <?php wp_nonce_field( 'materyal_paylas_action', 'materyal_nonce' ); ?>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Materyal Başlığı *</label>
-                    <input type="text" name="materyal_baslik" required style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px;" placeholder="Örn: 9. Sınıf Matematik 1. Dönem 1. Yazılı Soruları">
-                </div>
+				<h1 class="<?php material_the_class( 'title', 'mt-6 text-3xl sm:text-4xl lg:text-5xl' ); ?>">Materyal Paylaş</h1>
 
-                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                    <div style="flex: 1;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Sınıf Seçiniz</label>
-                        <select name="sinif_grubu" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; background: #fff;">
-                            <option value="">-- Seçiniz --</option>
-                            <?php 
-                            $siniflar = get_terms( array('taxonomy' => 'sinif_grubu', 'hide_empty' => false) );
-                            foreach ( $siniflar as $sinif ) { echo '<option value="' . esc_attr($sinif->term_id) . '">' . esc_html($sinif->name) . '</option>'; }
-                            ?>
-                        </select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Ders Seçiniz</label>
-                        <select name="dersler" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; background: #fff;">
-                            <option value="">-- Seçiniz --</option>
-                            <?php 
-                            $dersler = get_terms( array('taxonomy' => 'dersler', 'hide_empty' => false) );
-                            foreach ( $dersler as $ders ) { echo '<option value="' . esc_attr($ders->term_id) . '">' . esc_html($ders->name) . '</option>'; }
-                            ?>
-                        </select>
-                    </div>
-                </div>
+				<p class="mt-5 text-base leading-relaxed text-slate">
+					Elinizdeki eğitim dokümanlarını, soruları ve notları buradaki formu kullanarak tüm
+					öğrencilerle ve öğretmenlerle paylaşabilirsiniz. Gönderiniz onaylandıktan sonra
+					sistemde yayınlanacaktır.
+				</p>
+			</header>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Konu Seçiniz</label>
-                    <select name="konular" id="konu_secimi" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; background: #fff;" onchange="toggleDiger(this.value)">
-                        <option value="">-- Seçiniz --</option>
-                        <?php 
-                        $konular = get_terms( array('taxonomy' => 'konular', 'hide_empty' => false) );
-                        foreach ( $konular as $k ) { echo '<option value="' . esc_attr($k->term_id) . '">' . esc_html($k->name) . '</option>'; }
-                        ?>
-                        <option value="-1" style="font-weight: bold;">+ Diğer (Listede Yok)</option>
-                    </select>
-                </div>
+			<?php if ( $material_message ) : ?>
+				<p class="mt-8 rounded-xl px-5 py-4 text-center font-semibold <?php echo 'success' === $material_status ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'; ?>">
+					<?php echo esc_html( $material_message ); ?>
+				</p>
+			<?php endif; ?>
 
-                <div id="diger_konu_alani" style="margin-bottom: 20px; display: none;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Lütfen Konuyu Yazınız</label>
-                    <input type="text" name="diger_konu" style="width: 100%; padding: 12px 15px; border: 1px solid #838C48; border-radius: 8px; font-size: 15px;" placeholder="Yeni konu adını giriniz...">
-                </div>
+			<?php if ( 'success' !== $material_status ) : ?>
+				<form action="" method="post" enctype="multipart/form-data" class="mt-10 space-y-5">
+					<?php wp_nonce_field( 'materyal_paylas_action', 'materyal_nonce' ); ?>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Açıklama / İçerik</label>
-                    <?php 
-                        $settings = array( 'media_buttons' => false, 'textarea_rows' => 6, 'editor_class' => 'materyal-editor' );
-                        wp_editor( '', 'materyal_icerik', $settings ); 
-                    ?>
-                </div>
+					<div>
+						<label for="materyal-baslik" class="<?php echo esc_attr( $material_label_class ); ?>">Materyal Başlığı *</label>
+						<input
+							id="materyal-baslik" type="text" name="materyal_baslik" required
+							placeholder="Örn: 9. Sınıf Matematik 1. Dönem 1. Yazılı Soruları"
+							class="<?php echo esc_attr( $material_field_class ); ?>"
+						>
+					</div>
 
-                <div style="margin-bottom: 30px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Doküman / Dosya Yükle (Varsa)</label>
-                    <input type="file" name="materyal_dosya" style="width: 100%; padding: 10px; border: 1px dashed #ccc; border-radius: 8px; font-size: 15px; background: #fafafa;">
-                    <small style="color: #888; display: block; margin-top: 5px;">İzin verilen formatlar: PDF, Word, Excel, ZIP (Max: 10MB)</small>
-                </div>
+					<div class="grid gap-5 sm:grid-cols-2">
+						<?php
+						$material_selects = array(
+							array( 'sinif_grubu', 'Sınıf Seçiniz', 'sinif_grubu' ),
+							array( 'dersler', 'Ders Seçiniz', 'dersler' ),
+						);
+						?>
+						<?php foreach ( $material_selects as $material_select ) : ?>
+							<div>
+								<label for="materyal-<?php echo esc_attr( $material_select[0] ); ?>" class="<?php echo esc_attr( $material_label_class ); ?>">
+									<?php echo esc_html( $material_select[1] ); ?>
+								</label>
+								<select
+									id="materyal-<?php echo esc_attr( $material_select[0] ); ?>"
+									name="<?php echo esc_attr( $material_select[0] ); ?>"
+									class="<?php echo esc_attr( $material_field_class ); ?>"
+								>
+									<option value="">-- Seçiniz --</option>
+									<?php foreach ( get_terms( array( 'taxonomy' => $material_select[2], 'hide_empty' => false ) ) as $material_term ) : ?>
+										<option value="<?php echo esc_attr( $material_term->term_id ); ?>"><?php echo esc_html( $material_term->name ); ?></option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+						<?php endforeach; ?>
+					</div>
 
-                <div style="text-align: center;">
-                    <button type="submit" name="submit_materyal" style="background: #838C48; color: #fff; padding: 15px 40px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(131,140,72,0.3);">
-                        Materyali Gönder
-                    </button>
-                </div>
+					<div>
+						<label for="konu_secimi" class="<?php echo esc_attr( $material_label_class ); ?>">Konu Seçiniz</label>
+						<select id="konu_secimi" name="konular" class="<?php echo esc_attr( $material_field_class ); ?>">
+							<option value="">-- Seçiniz --</option>
+							<?php foreach ( get_terms( array( 'taxonomy' => 'konular', 'hide_empty' => false ) ) as $material_k ) : ?>
+								<option value="<?php echo esc_attr( $material_k->term_id ); ?>"><?php echo esc_html( $material_k->name ); ?></option>
+							<?php endforeach; ?>
+							<option value="-1">+ Diğer (Listede Yok)</option>
+						</select>
+					</div>
 
-            </form>
-        <?php endif; ?>
+					<div id="diger_konu_alani" class="hidden">
+						<label for="diger-konu" class="<?php echo esc_attr( $material_label_class ); ?>">Lütfen Konuyu Yazınız</label>
+						<input
+							id="diger-konu" type="text" name="diger_konu"
+							placeholder="Yeni konu adını giriniz..."
+							class="w-full rounded-lg border border-olive-500 bg-white px-4 py-3 text-[15px] text-ink focus:outline-none focus:ring-4 focus:ring-olive-500/10"
+						>
+					</div>
 
-    </div>
+					<div>
+						<span class="<?php echo esc_attr( $material_label_class ); ?>">Açıklama / İçerik</span>
+						<?php
+						wp_editor( '', 'materyal_icerik', array(
+							'media_buttons' => false,
+							'textarea_rows' => 6,
+						) );
+						?>
+					</div>
+
+					<div>
+						<label for="materyal-dosya" class="<?php echo esc_attr( $material_label_class ); ?>">Doküman / Dosya Yükle (Varsa)</label>
+						<input
+							id="materyal-dosya" type="file" name="materyal_dosya"
+							class="w-full rounded-lg border border-dashed border-dune bg-cream/50 p-2.5 text-[15px] text-slate file:mr-4 file:rounded-md file:border-0 file:bg-olive-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-olive-600"
+						>
+						<small class="mt-1.5 block text-slate/70">İzin verilen formatlar: PDF, Word, Excel, ZIP (Max: 10MB)</small>
+					</div>
+
+					<div class="pt-3 text-center">
+						<button type="submit" name="submit_materyal" class="<?php material_the_class( 'btn', material_class( 'btn-primary', 'px-10 py-4 text-base' ) ); ?>">
+							Materyali Gönder
+						</button>
+					</div>
+				</form>
+			<?php endif; ?>
+
+		</div>
+	</div>
 </div>
 
 <script>
-function toggleDiger(val) {
-    var alani = document.getElementById('diger_konu_alani');
-    if (val === '-1') {
-        alani.style.display = 'block';
-        alani.querySelector('input').setAttribute('required', 'required');
-    } else {
-        alani.style.display = 'none';
-        alani.querySelector('input').removeAttribute('required');
-    }
-}
+/* "Diger" secilince serbest konu alanini ac. */
+( function () {
+	var select = document.getElementById( 'konu_secimi' );
+	var field  = document.getElementById( 'diger_konu_alani' );
+
+	if ( ! select || ! field ) {
+		return;
+	}
+
+	select.addEventListener( 'change', function () {
+		var isOther = select.value === '-1';
+		var input   = field.querySelector( 'input' );
+
+		field.classList.toggle( 'hidden', ! isOther );
+
+		if ( isOther ) {
+			input.setAttribute( 'required', 'required' );
+		} else {
+			input.removeAttribute( 'required' );
+		}
+	} );
+} )();
 </script>
 
 <?php get_footer(); ?>

@@ -1,9 +1,35 @@
 <?php
+// Tailwind altyapisi ve paylasilan yardimcilar.
+require_once get_template_directory() . '/inc/helpers.php';
+require_once get_template_directory() . '/inc/icons.php';
+require_once get_template_directory() . '/inc/tailwind.php';
+require_once get_template_directory() . '/inc/class-material-nav-walker.php';
+
 function material_theme_setup() {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
+    add_theme_support('custom-logo');
+    add_theme_support('html5', array('search-form', 'gallery', 'caption', 'style', 'script'));
 }
 add_action('after_setup_theme', 'material_theme_setup');
+
+// Tema JS'i (mobil menu, sticky header, sayaclar).
+function material_enqueue_assets() {
+    wp_enqueue_style('material-style', get_stylesheet_uri(), array(), null);
+    wp_enqueue_script(
+        'material-site',
+        get_template_directory_uri() . '/assets/js/site.js',
+        array(),
+        null,
+        true
+    );
+
+    // Frontend'de ajaxurl tanimli degil; filtreleyen sablonlar buradan okuyor.
+    wp_localize_script('material-site', 'materialAjax', array(
+        'url' => admin_url('admin-ajax.php'),
+    ));
+}
+add_action('wp_enqueue_scripts', 'material_enqueue_assets');
 
 // PDF Gereksinimleri: Custom Post Types ve Taxonomies
 function materyal_havuzu_kurulum() {
@@ -119,21 +145,8 @@ function material_register_menus() {
 }
 add_action( 'init', 'material_register_menus' );
 
-// Menü linklerine span eklemek için walker veya filtre
-function material_nav_menu_link_attributes($atts, $item, $args) {
-    if($args->theme_location == 'primary-menu') {
-        // We will add the span inside the title instead
-    }
-    return $atts;
-}
-
-function material_nav_menu_title($title, $item, $args, $depth) {
-    if($args->theme_location == 'primary-menu') {
-        return '<span data-text="' . esc_attr($title) . '">' . $title . '</span>';
-    }
-    return $title;
-}
-add_filter('nav_menu_item_title', 'material_nav_menu_title', 10, 4);
+// Menu markup'i Material_Nav_Walker uzerinden Tailwind siniflari ile uretiliyor
+// (bkz. inc/class-material-nav-walker.php).
 
 
 // Homepage Customizer Settings

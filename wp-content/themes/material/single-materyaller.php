@@ -1,135 +1,167 @@
 <?php
 /**
- * Tekil Materyal Detay Şablonu
+ * Tekil materyal detay sablonu.
+ *
+ * @package Material
  */
+
 get_header(); ?>
 
-<div class="wdt-main-content-wrapper" style="padding: 150px 20px 80px; background: #fdf6ea; position: relative; overflow: hidden;">
-    
-    <!-- Arka plan süslemeleri -->
-    <div style="position: absolute; top: -50px; left: -100px; width: 400px; height: 400px; background: rgba(131,140,72,0.05); border-radius: 50%; filter: blur(50px);"></div>
-    <div style="position: absolute; bottom: 10%; right: -100px; width: 300px; height: 300px; background: rgba(218,133,61,0.05); border-radius: 50%; filter: blur(40px);"></div>
+<div class="relative isolate overflow-hidden bg-cream py-20 lg:py-28">
 
-    <div class="container" style="max-width: 950px; margin: 0 auto; position: relative; z-index: 1;">
-        
-        <?php while ( have_posts() ) : the_post(); ?>
-            <article id="post-<?php the_ID(); ?>" <?php post_class(); ?> style="background: #fff; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid rgba(131,140,72,0.1);">
-                
-                <!-- Üst Kısım (Header Alanı) -->
-                <header class="entry-header" style="background: linear-gradient(135deg, rgba(131,140,72,0.05) 0%, rgba(218,133,61,0.05) 100%); padding: 50px 40px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                    <?php 
-                    $sinif = get_the_terms(get_the_ID(), 'sinif_grubu');
-                    $ders = get_the_terms(get_the_ID(), 'dersler');
-                    $konu = get_the_terms(get_the_ID(), 'konular');
-                    $tur = get_the_terms(get_the_ID(), 'materyal_turu');
-                    
-                    echo '<div class="badges" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">';
-                    if($sinif && !is_wp_error($sinif)) {
-                        echo '<span style="background: #fff; color: #838C48; padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(131,140,72,0.1); border: 1px solid rgba(131,140,72,0.1);"><i class="fa fa-graduation-cap"></i> ' . esc_html($sinif[0]->name) . '</span>';
-                    }
-                    if($ders && !is_wp_error($ders)) {
-                        echo '<span style="background: #fff; color: #DA853D; padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(218,133,61,0.1); border: 1px solid rgba(218,133,61,0.1);"><i class="fa fa-book"></i> ' . esc_html($ders[0]->name) . '</span>';
-                    }
-                    if($konu && !is_wp_error($konu)) {
-                        echo '<span style="background: #fff; color: #0171BB; padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 10px rgba(1,113,187,0.1); border: 1px solid rgba(1,113,187,0.1);"><i class="fa fa-layer-group"></i> ' . esc_html($konu[0]->name) . '</span>';
-                    }
-                    echo '</div>';
-                    
-                    the_title( '<h1 class="entry-title" style="font-family: \'Playfair Display\', serif; font-size: 42px; font-weight: 800; color: #303030; margin-bottom: 0; line-height: 1.3;">', '</h1>' ); 
-                    ?>
-                </header>
+	<?php // Arka plan susleri. ?>
+	<div class="absolute -left-24 -top-12 -z-10 h-96 w-96 rounded-full bg-olive-500/5 blur-3xl"></div>
+	<div class="absolute -right-24 bottom-[10%] -z-10 h-72 w-72 rounded-full bg-sunset-500/5 blur-3xl"></div>
 
-                <div class="entry-content-wrap" style="padding: 40px; display: flex; flex-direction: column; align-items: center;">
-                    
-                    <div class="materyal-icon" style="width: 80px; height: 80px; background: rgba(131,140,72,0.1); color: #838C48; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 25px;">
-                        <i class="fa fa-file-alt"></i>
-                    </div>
+	<div class="<?php material_the_class( 'shell' ); ?>">
+		<?php while ( have_posts() ) : the_post();
 
-                    <div class="entry-content" style="font-family: 'Inter', sans-serif; font-size: 18px; line-height: 1.8; color: #555; text-align: center; max-width: 700px; margin-bottom: 40px;">
-                        <?php 
-                        $content = apply_filters('the_content', get_the_content());
-                        // İçerik içindeki <img ...> etiketlerini temizle
-                        $content = preg_replace('/<img[^>]+>/i', '', $content);
-                        // Eğer medyaya link verildiyse (<a> etiketi ve wp-content/uploads geçiyorsa) onları da temizle
-                        $content = preg_replace('/<a[^>]*href="[^"]*wp-content\/uploads[^"]*"[^>]*>.*?<\/a>/i', '', $content);
-                        // İçerik içindeki WP galeri / resim caption kodlarını temizle
-                        $content = preg_replace('/\[caption[^\]]*\].*?\[\/caption\]/is', '', $content);
-                        // Boş p etiketlerini temizle
-                        $content = preg_replace('/<p>\s*(?:<br\s*\/?>)?\s*<\/p>/i', '', $content);
-                        
-                        echo $content;
-                        ?>
-                    </div>
+			$material_taxonomies = array(
+				array( 'sinif_grubu', 'badge-olive' ),
+				array( 'dersler', 'badge-sunset' ),
+				array( 'konular', 'badge-azure' ),
+			);
+			?>
+			<article id="post-<?php the_ID(); ?>" <?php post_class( material_class( 'card' ) ); ?>>
 
-                    <?php
-                    // Ekli tüm medyaları al (Kullanıcının text editöre sürüklediği her şey buradadır)
-                    $attachments = get_attached_media('', get_the_ID());
-                    $dosya_id_meta = get_post_meta(get_the_ID(), 'yuklenen_dosya_id', true);
+				<?php // ---------- Baslik alani ---------- ?>
+				<header class="border-b border-black/5 bg-gradient-to-br from-olive-500/5 to-sunset-500/5 px-6 py-12 text-center sm:px-10 lg:py-14">
 
-                    $all_files = array();
-                    if ($dosya_id_meta) {
-                        $meta_post = get_post($dosya_id_meta);
-                        if ($meta_post) $all_files[$dosya_id_meta] = $meta_post;
-                    }
-                    if (!empty($attachments)) {
-                        foreach($attachments as $att) {
-                            $all_files[$att->ID] = $att;
-                        }
-                    }
+					<div class="mb-6 flex flex-wrap justify-center gap-2.5">
+						<?php foreach ( $material_taxonomies as $material_tax ) :
+							$material_name = material_first_term_name( get_the_ID(), $material_tax[0] );
+							if ( ! $material_name ) {
+								continue;
+							}
+							?>
+							<span class="<?php material_the_class( 'badge', material_class( $material_tax[1] ) ); ?>">
+								<?php echo esc_html( $material_name ); ?>
+							</span>
+						<?php endforeach; ?>
+					</div>
 
-                    if (!empty($all_files)) :
-                    ?>
-                        <!-- Gelişmiş Dosya Gösterimi -->
-                        <div class="attached-files" style="width: 100%; max-width: 800px; text-align: left; background: #fafafa; border-radius: 20px; padding: 30px; margin-bottom: 30px; border: 1px solid #eaeaea;">
-                            <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #303030; margin-bottom: 25px; display: flex; align-items: center;">
-                                <i class="fa fa-paperclip" style="color: #838C48; margin-right: 10px;"></i> İndirilebilir Dosyalar
-                            </h3>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
-                                <?php 
-                                foreach ($all_files as $att_id => $att) {
-                                    $url = wp_get_attachment_url($att_id);
-                                    $title = $att->post_title;
-                                    $mime = get_post_mime_type($att_id);
-                                    
-                                    // Dosya tipine göre ikon belirle
-                                    $icon = 'fa-file-alt';
-                                    $color = '#666';
-                                    if (strpos($mime, 'image') !== false) { $icon = 'fa-file-image'; $color = '#0171BB'; }
-                                    elseif (strpos($mime, 'pdf') !== false) { $icon = 'fa-file-pdf'; $color = '#d32f2f'; }
-                                    elseif (strpos($mime, 'word') !== false || strpos($mime, 'document') !== false) { $icon = 'fa-file-word'; $color = '#1976d2'; }
-                                    elseif (strpos($mime, 'video') !== false) { $icon = 'fa-file-video'; $color = '#F2672E'; }
-                                    elseif (strpos($mime, 'zip') !== false || strpos($mime, 'rar') !== false) { $icon = 'fa-file-archive'; $color = '#7b1fa2'; }
+					<h1 class="<?php material_the_class( 'title', 'mx-auto max-w-4xl text-3xl sm:text-4xl lg:text-5xl' ); ?>">
+						<?php the_title(); ?>
+					</h1>
+				</header>
 
-                                    echo '<a href="'.esc_url($url).'" target="_blank" download style="display: flex; align-items: center; background: #fff; padding: 15px 20px; border-radius: 12px; text-decoration: none; border: 1px solid #eaeaea; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor=\''.esc_attr($color).'\'; this.style.transform=\'translateY(-3px)\'; this.style.boxShadow=\'0 8px 20px rgba(0,0,0,0.05)\';" onmouseout="this.style.borderColor=\'#eaeaea\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 10px rgba(0,0,0,0.02)\';">';
-                                    echo '<i class="fa '.esc_attr($icon).'" style="font-size: 28px; color: '.esc_attr($color).'; margin-right: 15px; min-width: 28px; text-align: center;"></i>';
-                                    echo '<span style="font-family: \'Inter\', sans-serif; font-size: 14px; font-weight: 600; color: #444; word-break: break-word; line-height: 1.4;">'.esc_html(wp_trim_words($title, 5, '...')).'</span>';
-                                    echo '</a>';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+				<?php // ---------- Icerik ---------- ?>
+				<div class="flex flex-col items-center px-6 py-10 sm:px-10">
 
-                    <!-- Özel İndirme ve Paylaşım Alanı -->
-                    <div class="action-buttons" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; width: 100%; padding-top: 10px;">
+					<div class="flex h-20 w-20 items-center justify-center rounded-full bg-olive-500/10 text-olive-500">
+						<svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.6c0-1.14-.9-2.06-2-2.06h-2.5a1.5 1.5 0 0 1-1.5-1.5V5.56c0-1.14-.9-2.06-2-2.06H8.25m3.75 0H6.9c-.77 0-1.4.65-1.4 1.44v15.12c0 .8.63 1.44 1.4 1.44h10.2c.77 0 1.4-.65 1.4-1.44V10.5A7 7 0 0 0 12 3.5Z"/>
+						</svg>
+					</div>
 
-                        <!-- WhatsApp Paylaş -->
-                        <?php
-                        $post_url = urlencode(get_permalink());
-                        $post_title = urlencode(get_the_title());
-                        $whatsapp_url = "https://api.whatsapp.com/send?text=" . $post_title . " - " . $post_url;
-                        ?>
-                        <a href="<?php echo $whatsapp_url; ?>" target="_blank" class="whatsapp-btn" style="display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #25D366 0%, #1da851 100%); color: #fff; padding: 16px 45px; border-radius: 50px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 20px rgba(37,211,102,0.3); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 25px rgba(37,211,102,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 20px rgba(37,211,102,0.3)';">
-                            <i class="fab fa-whatsapp" style="margin-right:10px; font-size:22px;"></i>
-                            Sınıfta Paylaş
-                        </a>
-                    </div>
+					<div class="<?php material_the_class( 'prose', 'mt-7 max-w-2xl text-center text-lg leading-relaxed' ); ?>">
+						<?php
+						$material_content = apply_filters( 'the_content', get_the_content() );
+						// Icerikteki gorseller ayri "indirilebilir dosyalar" bolumunde listeleniyor.
+						$material_content = preg_replace( '/<img[^>]+>/i', '', $material_content );
+						$material_content = preg_replace( '/<a[^>]*href="[^"]*wp-content\/uploads[^"]*"[^>]*>.*?<\/a>/i', '', $material_content );
+						$material_content = preg_replace( '/\[caption[^\]]*\].*?\[\/caption\]/is', '', $material_content );
+						$material_content = preg_replace( '/<p>\s*(?:<br\s*\/?>)?\s*<\/p>/i', '', $material_content );
 
-                </div>
-            </article>
-        <?php endwhile; ?>
+						echo $material_content; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content filtresinden geciyor.
+						?>
+					</div>
 
-    </div>
+					<?php // ---------- Indirilebilir dosyalar ---------- ?>
+					<?php
+					$material_files    = array();
+					$material_meta_id  = get_post_meta( get_the_ID(), 'yuklenen_dosya_id', true );
+
+					if ( $material_meta_id ) {
+						$material_meta_post = get_post( $material_meta_id );
+						if ( $material_meta_post ) {
+							$material_files[ $material_meta_id ] = $material_meta_post;
+						}
+					}
+
+					foreach ( (array) get_attached_media( '', get_the_ID() ) as $material_att ) {
+						$material_files[ $material_att->ID ] = $material_att;
+					}
+
+					if ( ! empty( $material_files ) ) :
+						/*
+						 * Dosya turune gore ikon + Tailwind renk sinifi.
+						 * Sinif adlari tam yazilmali, aksi halde Tailwind uretmez.
+						 */
+						$material_file_types = array(
+							'image'    => array( 'text-azure',      'hover:border-azure' ),
+							'pdf'      => array( 'text-red-600',    'hover:border-red-600' ),
+							'word'     => array( 'text-blue-600',   'hover:border-blue-600' ),
+							'document' => array( 'text-blue-600',   'hover:border-blue-600' ),
+							'video'    => array( 'text-sunset-500', 'hover:border-sunset-500' ),
+							'zip'      => array( 'text-purple-700', 'hover:border-purple-700' ),
+							'rar'      => array( 'text-purple-700', 'hover:border-purple-700' ),
+						);
+						?>
+						<section class="mt-10 w-full max-w-3xl rounded-2xl border border-dune/60 bg-cream/60 p-7">
+							<h2 class="mb-6 flex items-center gap-2.5 font-display text-xl font-bold text-ink">
+								<svg class="h-5 w-5 text-olive-500" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" d="m18.4 12.8-7.1 7.1a4.5 4.5 0 0 1-6.4-6.4l7.9-7.9a3 3 0 1 1 4.2 4.2l-7.8 7.9a1.5 1.5 0 0 1-2.1-2.1l7.2-7.2"/>
+								</svg>
+								İndirilebilir Dosyalar
+							</h2>
+
+							<ul class="grid gap-4 sm:grid-cols-2">
+								<?php foreach ( $material_files as $material_att_id => $material_att ) :
+									$material_mime  = (string) get_post_mime_type( $material_att_id );
+									$material_color = 'text-slate';
+									$material_hover = 'hover:border-olive-500';
+
+									foreach ( $material_file_types as $material_key => $material_style ) {
+										if ( false !== strpos( $material_mime, $material_key ) ) {
+											list( $material_color, $material_hover ) = $material_style;
+											break;
+										}
+									}
+									?>
+									<li>
+										<a
+											href="<?php echo esc_url( wp_get_attachment_url( $material_att_id ) ); ?>"
+											target="_blank" rel="noopener" download
+											class="flex items-center gap-4 rounded-xl border border-dune/60 bg-white px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card <?php echo esc_attr( $material_hover ); ?>"
+										>
+											<svg class="h-7 w-7 shrink-0 <?php echo esc_attr( $material_color ); ?>" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+												<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.6c0-1.14-.9-2.06-2-2.06h-2.5a1.5 1.5 0 0 1-1.5-1.5V5.56c0-1.14-.9-2.06-2-2.06H8.25m3.75 0H6.9c-.77 0-1.4.65-1.4 1.44v15.12c0 .8.63 1.44 1.4 1.44h10.2c.77 0 1.4-.65 1.4-1.44V10.5A7 7 0 0 0 12 3.5Z"/>
+											</svg>
+											<span class="break-words text-sm font-semibold leading-snug text-ink">
+												<?php echo esc_html( wp_trim_words( $material_att->post_title, 5 ) ); ?>
+											</span>
+										</a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</section>
+					<?php endif; ?>
+
+					<?php // ---------- Paylas ---------- ?>
+					<div class="mt-10 flex w-full flex-wrap justify-center gap-4">
+						<?php
+						$material_share_url = add_query_arg(
+							'text',
+							get_the_title() . ' - ' . get_permalink(),
+							'https://api.whatsapp.com/send'
+						);
+						?>
+						<a
+							href="<?php echo esc_url( $material_share_url ); ?>"
+							target="_blank" rel="noopener noreferrer"
+							class="<?php material_the_class( 'btn', 'bg-[#25D366] px-11 py-4 text-base text-white shadow-pill hover:-translate-y-0.5 hover:bg-[#1da851] hover:shadow-lift' ); ?>"
+						>
+							<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								<path d="M17.5 14.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4M12 2a10 10 0 0 0-8.5 15.3L2 22.5l5.4-1.4A10 10 0 1 0 12 2Zm0 18.3c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.2.8.9-3.1-.2-.3a8.3 8.3 0 1 1 7.3 4Z"/>
+							</svg>
+							Sınıfta Paylaş
+						</a>
+					</div>
+				</div>
+			</article>
+		<?php endwhile; ?>
+	</div>
 </div>
 
 <?php get_footer(); ?>
