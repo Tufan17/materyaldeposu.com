@@ -42,7 +42,8 @@ $material_cards = array(
 ?>
 
 <?php // ---------------- Hero ---------------- ?>
-<section class="relative isolate overflow-hidden bg-gradient-to-br from-olive-900 to-olive-700 px-5 pb-28 pt-20 text-center text-white lg:pt-28">
+<?php // pt-* seffaf header'in uzerine binmemesi icin fazladan pay birakiyor. ?>
+<section class="relative isolate overflow-hidden bg-gradient-to-br from-olive-900 to-olive-700 px-5 pb-28 pt-36 text-center text-white lg:pt-44">
 	<div class="absolute -left-24 -top-40 -z-10 h-[500px] w-[500px] rounded-full bg-sunset-500/20 blur-3xl"></div>
 	<div class="absolute -bottom-40 -right-16 -z-10 h-96 w-96 rounded-full bg-sand/20 blur-3xl"></div>
 

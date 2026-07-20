@@ -26,6 +26,26 @@ function material_logo_url() {
 }
 
 /**
+ * Sayfa, header'in uzerine binebilecegi koyu bir hero ile mi basliyor?
+ *
+ * Boyle sayfalarda header seffaf olarak gorselin uzerinde durur ve
+ * sayfa kaydirilinca opak hale gelir.
+ *
+ * @return bool
+ */
+function material_has_hero() {
+	$has_hero = is_front_page()
+		|| is_page_template( array( 'page-hakkimizda.php', 'page-iletisim.php' ) );
+
+	/**
+	 * Seffaf header davranisini sablon bazinda degistirmek icin.
+	 *
+	 * @param bool $has_hero
+	 */
+	return (bool) apply_filters( 'material_has_hero', $has_hero );
+}
+
+/**
  * Sik kullanilan Tailwind bilesen siniflari.
  *
  * Ayni buton/rozet/kart kombinasyonunu her sablonda elle yazmak yerine

@@ -26,15 +26,31 @@
 		} );
 	}
 
-	/* --- Sticky header: sayfa kaydirilinca golge --- */
+	/* --- Header: sayfa kaydirilinca opaklas ---
+	 * Overlay modda (hero'lu sayfalar) header gorselin uzerinde seffaf ve
+	 * beyaz metinle durur; kaydirilinca sabitlenip krem zemine gecer.
+	 */
 	var header = document.querySelector( '[data-site-header]' );
 
 	if ( header ) {
-		var shadowClasses = [ 'shadow-lift', 'bg-cream/95' ];
+		var isOverlay = header.hasAttribute( 'data-header-overlay' );
+
+		// Seffaf durumda acik olan siniflar / opak durumda acik olan siniflar.
+		var transparentClasses = isOverlay
+			? [ 'absolute', 'bg-transparent', 'border-transparent', 'text-white' ]
+			: [];
+
+		var solidClasses = isOverlay
+			? [ 'fixed', 'bg-cream/95', 'border-dune/50', 'text-ink', 'backdrop-blur-md', 'shadow-lift' ]
+			: [ 'shadow-lift', 'bg-cream/95' ];
 
 		var syncHeader = function () {
 			var scrolled = window.scrollY > 24;
-			shadowClasses.forEach( function ( cls ) {
+
+			transparentClasses.forEach( function ( cls ) {
+				header.classList.toggle( cls, ! scrolled );
+			} );
+			solidClasses.forEach( function ( cls ) {
 				header.classList.toggle( cls, scrolled );
 			} );
 		};

@@ -92,7 +92,8 @@ $material_pop    = 'opacity-0 scale-95 transition-all duration-700 ease-out';
 	<img src="<?php echo esc_url( $material_hero_bg ); ?>" alt="" class="absolute inset-0 -z-20 h-full w-full object-cover">
 	<div class="absolute inset-0 -z-10 bg-gradient-to-br from-ink/85 via-olive-900/80 to-ink/85"></div>
 
-	<div class="<?php material_the_class( 'shell' ); ?> py-28 text-center lg:py-36">
+	<?php // pt-* seffaf header'in uzerine binmemesi icin fazladan pay birakiyor. ?>
+	<div class="<?php material_the_class( 'shell' ); ?> pb-28 pt-36 text-center lg:pb-36 lg:pt-44">
 		<p data-reveal class="<?php echo esc_attr( $material_reveal ); ?> inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-sm font-semibold text-white backdrop-blur">
 			<span class="h-2 w-2 animate-pulse rounded-full bg-sunset-400"></span>
 			Müfredat Materyal Havuzu

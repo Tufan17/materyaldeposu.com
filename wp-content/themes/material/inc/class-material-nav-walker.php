@@ -67,11 +67,16 @@ class Material_Nav_Walker extends Walker_Nav_Menu {
 			$a_class  = 'block rounded-lg px-3 py-2.5 text-sm font-semibold tracking-wide transition-colors '
 				. ( $is_current ? 'bg-olive-500 text-white' : 'text-ink hover:bg-sand hover:text-olive-600' );
 		} else {
-			$li_class = 'group relative' . ( $has_children ? '' : '' );
-			$a_class  = 'flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-bold uppercase tracking-wider transition-colors '
+			/*
+			 * Renk header'dan devraliniyor (text-inherit): header seffafken
+			 * beyaz, kaydirilinca koyu. Aktif oge pill yerine alt cizgi ile
+			 * isaretleniyor cunku iki zeminde de okunur kaliyor.
+			 */
+			$li_class = 'group relative';
+			$a_class  = 'relative flex items-center gap-1.5 px-3 py-2 text-[13px] font-bold uppercase tracking-wider text-inherit transition-opacity '
 				. ( $is_current
-					? 'bg-white text-olive-600 shadow-pill'
-					: 'text-ink/80 hover:text-olive-600' );
+					? 'opacity-100 after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-sunset-500'
+					: 'opacity-70 hover:opacity-100' );
 
 			// Acilir menu icindeki ogeler kutu degil, satir gorunumunde.
 			if ( $depth >= 1 ) {

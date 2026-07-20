@@ -69,10 +69,23 @@ $og_img   = ( is_singular() && has_post_thumbnail() )
 
 <div class="flex min-h-screen flex-col">
 
+	<?php
+	/*
+	 * Hero'lu sayfalarda header gorselin uzerinde seffaf durur; sayfa
+	 * kaydirilinca site.js opak sinifları ekler. Renk "text-inherit" ile
+	 * menuye akar, o yuzden iki durumda da tek yerden yonetiliyor.
+	 */
+	$material_overlay = material_has_hero();
+
+	$material_header_class = $material_overlay
+		? 'absolute inset-x-0 top-0 z-50 border-b border-transparent bg-transparent text-white'
+		: 'sticky top-0 z-50 border-b border-dune/50 bg-cream/85 text-ink backdrop-blur-md';
+	?>
 	<header
 		id="site-header"
 		data-site-header
-		class="sticky top-0 z-50 border-b border-dune/50 bg-cream/85 backdrop-blur-md transition-shadow duration-300"
+		<?php echo $material_overlay ? 'data-header-overlay' : ''; ?>
+		class="transition-all duration-300 <?php echo esc_attr( $material_header_class ); ?>"
 	>
 		<div class="mx-auto flex max-w-shell items-center justify-between gap-6 px-5 py-3 lg:px-8">
 
@@ -103,7 +116,7 @@ $og_img   = ( is_singular() && has_post_thumbnail() )
 				data-menu-toggle
 				aria-controls="mobile-menu"
 				aria-expanded="false"
-				class="inline-flex items-center justify-center rounded-lg p-2 text-ink transition-colors hover:bg-sand lg:hidden"
+				class="inline-flex items-center justify-center rounded-lg p-2 text-inherit transition-opacity hover:opacity-70 lg:hidden"
 			>
 				<span class="screen-reader-text"><?php esc_html_e( 'Menuyu ac', 'material' ); ?></span>
 				<svg data-menu-icon-open class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">

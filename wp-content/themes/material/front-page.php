@@ -23,7 +23,8 @@ $material_hero_bg = get_theme_mod(
 	>
 	<div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/55 to-ink/75"></div>
 
-	<div class="<?php material_the_class( 'shell' ); ?> py-24 text-center lg:py-32">
+	<?php // pt-* seffaf header'in uzerine binmemesi icin fazladan pay birakiyor. ?>
+	<div class="<?php material_the_class( 'shell' ); ?> pb-24 pt-36 text-center lg:pb-32 lg:pt-44">
 		<p class="animate-fade-up text-xs font-bold uppercase tracking-[0.3em] text-sunset-300">
 			<?php echo esc_html( get_theme_mod( 'hero_eyebrow', 'Materyal Deposu' ) ); ?>
 		</p>
@@ -89,6 +90,14 @@ $material_hero_bg = get_theme_mod(
 <?php // ======================= ONE CIKAN OZELLIKLER ======================= ?>
 <section class="<?php material_the_class( 'section', 'bg-cream' ); ?>">
 	<div class="<?php material_the_class( 'shell' ); ?>">
+		<?php
+		$material_feature_titles = array(
+			1 => 'En İyi Simülasyonlar',
+			2 => 'Grup Seminerleri',
+			3 => 'Analiz Edilmiş Müfredat',
+			4 => 'Uygulamalı Eğitim',
+		);
+		?>
 		<ul class="grid grid-cols-2 gap-8 lg:grid-cols-4">
 			<?php for ( $material_i = 1; $material_i <= 4; $material_i++ ) :
 				$material_custom_icon = get_theme_mod( 'feature_icon_' . $material_i, '' );
@@ -104,7 +113,7 @@ $material_hero_bg = get_theme_mod(
 						?>
 					</div>
 					<h3 class="mt-5 text-sm font-bold text-ink sm:text-base">
-						<?php echo esc_html( get_theme_mod( 'feature_title_' . $material_i, '' ) ); ?>
+						<?php echo esc_html( get_theme_mod( 'feature_title_' . $material_i, $material_feature_titles[ $material_i ] ) ); ?>
 					</h3>
 				</li>
 			<?php endfor; ?>
@@ -188,49 +197,8 @@ if ( $material_latest->have_posts() ) : ?>
 			</header>
 
 			<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-				<?php while ( $material_latest->have_posts() ) : $material_latest->the_post();
-					$material_sinif = material_first_term_name( get_the_ID(), 'sinif_grubu' );
-					$material_ders  = material_first_term_name( get_the_ID(), 'dersler' );
-					?>
-					<li class="<?php material_the_class( 'card', material_class( 'card-hover', 'flex flex-col' ) ); ?>">
-						<a href="<?php the_permalink(); ?>" class="flex h-full flex-col">
-							<?php if ( has_post_thumbnail() ) : ?>
-								<div class="aspect-[16/10] overflow-hidden bg-sand">
-									<?php the_post_thumbnail( 'large', array( 'class' => 'h-full w-full object-cover transition-transform duration-500 hover:scale-105' ) ); ?>
-								</div>
-							<?php else : ?>
-								<div class="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-olive-50 to-sand text-olive-500">
-									<svg class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke-width="1.4" stroke="currentColor" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.6c0-1.14-.9-2.06-2-2.06h-2.5a1.5 1.5 0 0 1-1.5-1.5V5.56c0-1.14-.9-2.06-2-2.06H8.25m3.75 0H6.9c-.77 0-1.4.65-1.4 1.44v15.12c0 .8.63 1.44 1.4 1.44h10.2c.77 0 1.4-.65 1.4-1.44V10.5A7 7 0 0 0 12 3.5Z"/>
-									</svg>
-								</div>
-							<?php endif; ?>
-
-							<div class="flex flex-1 flex-col p-6">
-								<div class="mb-4 flex flex-wrap gap-2">
-									<?php if ( $material_sinif ) : ?>
-										<span class="<?php material_the_class( 'badge', material_class( 'badge-olive' ) ); ?>"><?php echo esc_html( $material_sinif ); ?></span>
-									<?php endif; ?>
-									<?php if ( $material_ders ) : ?>
-										<span class="<?php material_the_class( 'badge', material_class( 'badge-sunset' ) ); ?>"><?php echo esc_html( $material_ders ); ?></span>
-									<?php endif; ?>
-								</div>
-
-								<h3 class="font-display text-xl font-bold leading-snug text-ink"><?php the_title(); ?></h3>
-
-								<p class="mt-3 flex-1 text-sm leading-relaxed text-slate">
-									<?php echo esc_html( wp_trim_words( get_the_excerpt(), 18 ) ); ?>
-								</p>
-
-								<span class="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-olive-600">
-									Materyali İncele
-									<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-										<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd"/>
-									</svg>
-								</span>
-							</div>
-						</a>
-					</li>
+				<?php while ( $material_latest->have_posts() ) : $material_latest->the_post(); ?>
+					<li><?php get_template_part( 'template-parts/content', 'materyal' ); ?></li>
 				<?php endwhile; ?>
 			</ul>
 		</div>
@@ -299,6 +267,51 @@ if ( $material_events->have_posts() ) : ?>
 					</li>
 				<?php endwhile; ?>
 			</ul>
+		</div>
+	</section>
+<?php endif;
+wp_reset_postdata();
+?>
+
+<?php // ======================= BLOGDAN SON YAZILAR ======================= ?>
+<?php
+$material_posts = new WP_Query( array(
+	'post_type'           => 'post',
+	'posts_per_page'      => 3,
+	'post_status'         => 'publish',
+	'ignore_sticky_posts' => true,
+	'no_found_rows'       => true,
+) );
+
+if ( $material_posts->have_posts() ) : ?>
+	<section class="<?php material_the_class( 'section', 'bg-cream' ); ?>">
+		<div class="<?php material_the_class( 'shell' ); ?>">
+			<header class="mb-14 text-center">
+				<p class="<?php material_the_class( 'eyebrow' ); ?>">Günlük</p>
+				<h2 class="<?php material_the_class( 'title', 'mt-3 text-3xl sm:text-4xl' ); ?>">Blogdan Son Yazılar</h2>
+				<div class="mx-auto mt-5 h-1 w-16 rounded-full bg-olive-500"></div>
+			</header>
+
+			<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+				<?php while ( $material_posts->have_posts() ) : $material_posts->the_post(); ?>
+					<li><?php get_template_part( 'template-parts/content', 'blog' ); ?></li>
+				<?php endwhile; ?>
+			</ul>
+
+			<?php
+			// Yazilar sayfasi Customizer'da atanmissa onu, degilse /blog/ kullan.
+			$material_blog_url = get_option( 'page_for_posts' )
+				? get_permalink( get_option( 'page_for_posts' ) )
+				: home_url( '/blog/' );
+			?>
+			<div class="mt-12 text-center">
+				<a href="<?php echo esc_url( $material_blog_url ); ?>" class="<?php material_the_class( 'btn', material_class( 'btn-outline' ) ); ?>">
+					Tüm Yazıları Gör
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+						<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd"/>
+					</svg>
+				</a>
+			</div>
 		</div>
 	</section>
 <?php endif;

@@ -81,7 +81,7 @@ $material_label_class = 'mb-2 block font-semibold text-ink';
 ?>
 
 <div class="<?php material_the_class( 'section', 'bg-cream' ); ?>">
-	<div class="mx-auto w-full max-w-3xl px-5 lg:px-8">
+	<div class="mx-auto w-full max-w-7xl px-5 lg:px-8">
 		<div class="rounded-card bg-white p-8 shadow-card sm:p-12">
 
 			<header class="text-center">

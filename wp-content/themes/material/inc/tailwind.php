@@ -25,6 +25,13 @@ function material_tailwind_head() {
 	<script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
 	<script>
 	tailwind.config = {
+		// site.js'in kaydirmada ekledigi header siniflari ilk HTML'de
+		// gecmiyor; CDN'in bunlari yine de uretmesi icin sabitliyoruz.
+		safelist: [
+			'fixed', 'absolute', 'bg-transparent', 'border-transparent',
+			'text-white', 'text-ink', 'bg-cream/95', 'border-dune/50',
+			'backdrop-blur-md', 'shadow-lift',
+		],
 		theme: {
 			extend: {
 				colors: {
